@@ -1,4 +1,15 @@
 const dialog = document.getElementById('dialog');
+let requestedRecording = false, recordingWrite = null;
+function setShortcutRecording(recording) {
+  if (!api || isPanel) return;
+  requestedRecording = recording;
+  if (recordingWrite) return;
+  const nextRecording = requestedRecording;
+  recordingWrite = invoke('record_shortcut', { recording: nextRecording }).catch(notice).finally(() => {
+    recordingWrite = null;
+    if (requestedRecording !== nextRecording) setShortcutRecording(requestedRecording);
+  });
+}
 function showDialog(title, content, submit) {
   dialog.innerHTML = `<form id="dialog-form"><header class="dialog-header"><h2 id="dialog-title">${title}</h2><button type="button" class="icon-button" data-action="close-dialog" aria-label="닫기">${icon('close')}</button></header>${content}<p id="dialog-error" class="form-error" role="alert"></p></form>`;
   if (!dialog.open) dialog.showModal();
@@ -113,10 +124,10 @@ on(document, 'keydown', event => {
   parts.push(code); event.target.value = parts.join('+');
 });
 
-on(document, "focusin", event => { if (event.target.matches("[data-hotkey]") && api) invoke("record_shortcut", { recording: true }).catch(notice); });
-on(document, "focusout", event => { if (event.target.matches("[data-hotkey]") && api) invoke("record_shortcut", { recording: false }).catch(notice); });
-on(window, "blur", () => { if (api) invoke("record_shortcut", { recording: false }).catch(notice); });
+on(document, "focusin", event => { if (event.target.matches("[data-hotkey]")) setShortcutRecording(true); });
+on(document, "focusout", event => { if (event.target.matches("[data-hotkey]")) setShortcutRecording(false); });
+on(window, "blur", () => setShortcutRecording(false));
 
-on(window, "focus", () => { if (api) invoke("record_shortcut", { recording: document.activeElement.matches("[data-hotkey]") }).catch(notice); });
+on(window, "focus", () => setShortcutRecording(document.activeElement?.matches("[data-hotkey]") || false));
 
 on(dialog, "close", () => { if (!dialog.open) dialog.replaceChildren(); });
