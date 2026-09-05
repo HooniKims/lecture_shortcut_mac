@@ -1,0 +1,1 @@
+legacy settings -> studio default; paper -> native Light; invalid theme -> rejected: PASS

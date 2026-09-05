@@ -1,0 +1,66 @@
+:root {
+  --input-bg: #1b1f25;
+  --border-soft: #2b323b;
+  --tab-ink: #a9c5ff;
+  --window-ink: #eeaa81;
+  --key-bg: #30363d;
+  --key-border: #444c56;
+  --key-ink: #d6dce4;
+  --dialog-border: #48505a;
+  --danger: #ffaaaa;
+  --warning-bg: #312b1f;
+  --warning-border: #876f3b;
+  --warning-ink: #e7c991;
+  --toast-bg: #edf4f1;
+  --toast-ink: #173c31;
+  --toast-shadow: #0005;
+  --backdrop: #05080b99;
+  --dialog-shadow: #0009;
+  --pad-bg: linear-gradient(155deg, #2a3038, #20242b);
+  --pad-selected-bg: linear-gradient(155deg, #2b403c, #202c2a);
+  --pad-shadow: inset 0 1px #ffffff14, inset 0 -3px #00000038, 0 3px 5px #00000040;
+  --pad-selected-shadow: inset 0 1px #73e2c224, 0 0 0 1px #73e2c21f, 0 3px 5px #00000040;
+}
+:root[data-theme="paper"] {
+  color-scheme: light;
+  --surface: #ffffff;
+  --sidebar: #f5f6f8;
+  --elevated: #fafbfc;
+  --text: #282d36;
+  --secondary: #667080;
+  --border: #d8dde5;
+  --border-soft: #e5e7eb;
+  --accent: #2874dc;
+  --accent-ink: #ffffff;
+  --selected: #eaf2ff;
+  --input-bg: #ffffff;
+  --tab-ink: #2874dc;
+  --window-ink: #a45628;
+  --key-bg: #ffffff;
+  --key-border: #d2d8e0;
+  --key-ink: #445063;
+  --dialog-border: #d8dde5;
+  --danger: #b3313b;
+  --warning-bg: #fff7e7;
+  --warning-border: #dcc48d;
+  --warning-ink: #795511;
+  --toast-bg: #26354a;
+  --toast-ink: #ffffff;
+  --toast-shadow: #25344b26;
+  --backdrop: #24344b38;
+  --dialog-shadow: #26354a26;
+  --pad-bg: linear-gradient(155deg, #ffffff, #f7f9fc);
+  --pad-selected-bg: linear-gradient(155deg, #f0f6ff, #e6effd);
+  --pad-shadow: inset 0 1px #fff, inset 0 -2px #26354a06, 0 2px 4px #26354a0a;
+  --pad-selected-shadow: inset 0 1px #fff, 0 0 0 1px #2874dc12, 0 2px 5px #26354a0a;
+}
+.theme-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; border: 0; padding: 0; margin: 0; }
+.theme-choice { display: flex; align-items: center; gap: 10px; padding: 14px 10px; border: 1px solid var(--border); border-radius: 9px; cursor: pointer; margin: 0 !important; }
+.theme-choice:has(input:checked) { border-color: var(--accent); background: var(--selected); }
+.theme-choice input { width: 14px; height: 14px; margin: 0; accent-color: var(--accent); }
+.theme-choice strong { color: var(--text); font-size: 12px; }
+.theme-choice small { display: block; margin-top: 5px; font-size: 10px; }
+.theme-swatch { width: 26px; height: 32px; border-radius: 5px; border: 1px solid var(--border); box-shadow: inset 7px 0 #0000000a; flex-shrink: 0; }
+.studio-swatch { background: #191c21; border-bottom: 5px solid #73e2c2; }
+.paper-swatch { background: #fff; border-bottom: 5px solid #2874dc; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }

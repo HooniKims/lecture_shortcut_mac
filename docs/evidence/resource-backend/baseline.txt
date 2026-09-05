@@ -1,0 +1,2 @@
+baseline stderr: result_ok=false child_count=0
+baseline early: result_ok=false child_count=1

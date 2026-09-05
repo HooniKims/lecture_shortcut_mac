@@ -1,0 +1,42 @@
+{
+  "scope": "Final source; ego browser real UI with isolated IPC fixture,300 theme saves. Not native WebKit.",
+  "before": {
+    "heap": {
+      "usedSize": 1568384,
+      "totalSize": 2359296,
+      "embedderHeapUsedSize": 1072152,
+      "backingStorageSize": 230188
+    },
+    "dom": {
+      "documents": 1,
+      "nodes": 203,
+      "jsEventListeners": 17
+    }
+  },
+  "after": {
+    "heap": {
+      "usedSize": 1647716,
+      "totalSize": 2359296,
+      "embedderHeapUsedSize": 1139304,
+      "backingStorageSize": 230196
+    },
+    "dom": {
+      "documents": 1,
+      "nodes": 203,
+      "jsEventListeners": 17
+    }
+  },
+  "state": {
+    "done": true,
+    "theme": "paper",
+    "dialogChildren": 0,
+    "listeners": {
+      "recorded-shortcut": 1,
+      "changed": 1,
+      "displays-changed": 1,
+      "notice": 1,
+      "action": 1,
+      "captured": 1
+    }
+  }
+}

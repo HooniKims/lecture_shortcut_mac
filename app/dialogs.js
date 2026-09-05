@@ -66,13 +66,14 @@ async function settingsDialog() {
   await pollDisplays();
   const s = config.settings;
   showDialog('환경 설정', `<p class="dialog-description">강의 환경에 맞춰 화면 전환 방식을 설정하세요.</p>
+    <section class="settings-section"><h3>${icon('grid')}화면 테마</h3><fieldset class="theme-choices"><legend class="sr-only">화면 테마 선택</legend><label class="theme-choice"><input type="radio" name="theme" value="studio" ${s.theme !== 'paper' ? 'checked' : ''}><span class="theme-swatch studio-swatch" aria-hidden="true"></span><span><strong>C · Studio</strong><small>어두운 제어판</small></span></label><label class="theme-choice"><input type="radio" name="theme" value="paper" ${s.theme === 'paper' ? 'checked' : ''}><span class="theme-swatch paper-swatch" aria-hidden="true"></span><span><strong>B · Paper</strong><small>밝고 차분한 화면</small></span></label></fieldset><p class="field-help">메인 화면과 발표자 패널에 함께 적용됩니다.</p></section>
     <section class="settings-section"><h3>${icon('monitor')}화면과 송출</h3><label>청중에게 보여줄 모니터<select name="displayId">${displays.map(d => `<option value="${escapeText(d.id)}" ${d.id === (s.displayId || displays.find(item => !item.primary)?.id || displays[0]?.id) ? 'selected' : ''}>${escapeText(d.name)}${d.primary ? ' · 기본 모니터' : ''}</option>`).join('')}</select></label>
     <label class="toggle-row"><span><strong>대기 모드</strong><small>${displays.length > 1 ? '원래 모니터에서 준비한 뒤 송출합니다.' : '모니터가 2대 이상일 때 사용할 수 있습니다.'}</small></span><input type="checkbox" name="standby" ${s.standby && displays.length > 1 ? 'checked' : ''} ${displays.length < 2 ? 'disabled' : ''}></label>
     <label class="toggle-row"><span><strong>재시작 후에도 등록 유지</strong><small>꺼도 직접 저장한 프리셋과 설정은 남습니다.</small></span><input type="checkbox" name="restore" ${s.restore ? 'checked' : ''}></label></section>
     <section class="settings-section"><h3>${icon('keyboard')}기능 단축키</h3><div class="shortcut-settings"><label>발표자 패널 켜기·끄기<input name="panelShortcut" data-hotkey value="${escapeText(s.panelShortcut)}" required></label><label>현재 화면 등록<input name="captureShortcut" data-hotkey value="${escapeText(s.captureShortcut)}" required></label><label>대기 화면 송출<input name="sendShortcut" data-hotkey value="${escapeText(s.sendShortcut)}" required></label></div><p class="field-help">필드를 선택한 후 원하는 키 조합을 누르세요.</p></section>
     <section class="permission-line"><span>macOS 손쉬운 사용 권한</span><button id="permission-button" type="button" class="button">권한 확인·설정</button></section>${dialogFooter('설정 저장')}`, async data => {
     const next = structuredClone(config);
-    next.settings = { restore: data.has('restore'), standby: data.has('standby') && displays.length > 1, displayId: String(data.get('displayId') || '') || null, panelShortcut: String(data.get('panelShortcut')), captureShortcut: String(data.get('captureShortcut')), sendShortcut: String(data.get('sendShortcut')) };
+    next.settings = { theme: String(data.get('theme') || 'studio'), restore: data.has('restore'), standby: data.has('standby') && displays.length > 1, displayId: String(data.get('displayId') || '') || null, panelShortcut: String(data.get('panelShortcut')), captureShortcut: String(data.get('captureShortcut')), sendShortcut: String(data.get('sendShortcut')) };
     await save(next); notice('설정을 저장했습니다.');
   });
   document.getElementById('permission-button').addEventListener('click', async () => {
@@ -97,7 +98,7 @@ function confirmDeletePreset(id) {
   const preset = config.presets.find(p => p.id === id); if (!preset) return;
   showDialog('프리셋 삭제', `<p class="dialog-description">${escapeText(preset.name)} 프리셋을 삭제합니다. 현재 등록 목록은 유지됩니다.</p>${dialogFooter('삭제하기')}`, async () => { const next = structuredClone(config); next.presets = next.presets.filter(p => p.id !== id); await save(next); });
 }
-document.addEventListener('keydown', event => {
+on(document, 'keydown', event => {
   if (!event.target.matches('[data-hotkey]')) return;
   if (event.key === 'Tab' || event.key === 'Escape') return;
   if (['Meta', 'Control', 'Shift', 'Alt'].includes(event.key)) { event.preventDefault(); return; }
@@ -112,8 +113,10 @@ document.addEventListener('keydown', event => {
   parts.push(code); event.target.value = parts.join('+');
 });
 
-document.addEventListener("focusin", event => { if (event.target.matches("[data-hotkey]") && api) invoke("record_shortcut", { recording: true }).catch(notice); });
-document.addEventListener("focusout", event => { if (event.target.matches("[data-hotkey]") && api) invoke("record_shortcut", { recording: false }).catch(notice); });
-window.addEventListener("blur", () => { if (api) invoke("record_shortcut", { recording: false }).catch(notice); });
+on(document, "focusin", event => { if (event.target.matches("[data-hotkey]") && api) invoke("record_shortcut", { recording: true }).catch(notice); });
+on(document, "focusout", event => { if (event.target.matches("[data-hotkey]") && api) invoke("record_shortcut", { recording: false }).catch(notice); });
+on(window, "blur", () => { if (api) invoke("record_shortcut", { recording: false }).catch(notice); });
 
-window.addEventListener("focus", () => { if (api) invoke("record_shortcut", { recording: document.activeElement.matches("[data-hotkey]") }).catch(notice); });
+on(window, "focus", () => { if (api) invoke("record_shortcut", { recording: document.activeElement.matches("[data-hotkey]") }).catch(notice); });
+
+on(dialog, "close", () => { if (!dialog.open) dialog.replaceChildren(); });

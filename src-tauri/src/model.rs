@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Target {
     pub id: String,
@@ -18,7 +18,7 @@ pub struct Target {
     pub pid: Option<i32>,
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum TargetKind {
     App,
@@ -26,7 +26,7 @@ pub enum TargetKind {
     Tab,
 }
 
-#[derive(Clone, Serialize, Deserialize, Default)]
+#[derive(Clone, PartialEq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "lowercase")]
 pub enum TabMode {
     #[default]
@@ -34,7 +34,7 @@ pub enum TabMode {
     Window,
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Entry {
     pub id: String,
@@ -45,9 +45,28 @@ pub struct Entry {
     pub tab_mode: TabMode,
 }
 
+#[derive(Clone, Copy, PartialEq, Default, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Theme {
+    #[default]
+    Studio,
+    Paper,
+}
+
+impl Theme {
+    pub const fn native(self) -> tauri::Theme {
+        match self {
+            Self::Studio => tauri::Theme::Dark,
+            Self::Paper => tauri::Theme::Light,
+        }
+    }
+}
+
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Settings {
+    #[serde(default)]
+    pub theme: Theme,
     pub restore: bool,
     pub standby: bool,
     pub display_id: Option<String>,
@@ -59,6 +78,7 @@ pub struct Settings {
 impl Default for Settings {
     fn default() -> Self {
         Self {
+            theme: Theme::default(),
             restore: true,
             standby: false,
             display_id: None,
@@ -86,7 +106,7 @@ pub struct Config {
     pub presets: Vec<Preset>,
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Serialize, Deserialize)]
 pub struct Display {
     pub id: String,
     pub name: String,
@@ -102,7 +122,7 @@ pub struct Permissions {
     pub accessibility: bool,
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Default, Serialize, Deserialize)]
 pub struct NativeReply {
     pub ok: bool,
     pub error: Option<String>,

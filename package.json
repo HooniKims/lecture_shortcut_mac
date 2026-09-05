@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "bash native/build.sh && tauri dev",
     "build": "bash native/build.sh && tauri build",
-    "check": "node --check app/main.js && node --check app/dialogs.js && cargo check --manifest-path src-tauri/Cargo.toml",
+    "check": "node --check app/main.js && node --check app/dialogs.js && node --check app/runtime.js && cargo check --manifest-path src-tauri/Cargo.toml",
     "tauri": "tauri"
   },
   "devDependencies": { "@tauri-apps/cli": "^2.11.0" }

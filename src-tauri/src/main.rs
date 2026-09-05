@@ -1,6 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 mod actions;
 mod commands;
+mod displays;
 mod model;
 mod native;
 mod shortcuts;
@@ -44,7 +45,14 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         )
         .setup(|app| {
             let state = store::Store::load(app.handle())?;
+            let theme = state
+                .config
+                .lock()
+                .map_err(|e| e.to_string())?
+                .settings
+                .theme;
             app.manage(state);
+            actions::apply_theme(app.handle(), theme)?;
             if let Err(e) = shortcuts::install(app.handle()) {
                 *app.state::<store::Store>()
                     .startup_error

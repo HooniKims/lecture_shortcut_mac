@@ -13,7 +13,8 @@ pub fn get_state(app: AppHandle) -> Result<Value, String> {
     Ok(
         json!({ "config": *store.config.lock().map_err(|e| e.to_string())?,
         "prepared": *store.prepared.lock().map_err(|e| e.to_string())?,
-        "startupError": *store.startup_error.lock().map_err(|e| e.to_string())? }),
+        "startupError": *store.startup_error.lock().map_err(|e| e.to_string())?,
+        "displays": store.displays.lock().map_err(|e| e.to_string())?.as_ref().map(|(_, d)| d.clone()).unwrap_or_default() }),
     )
 }
 
@@ -30,8 +31,18 @@ pub fn save_config(app: AppHandle, config: Config) -> Result<(), String> {
         }
         return Err(e);
     }
+    if current.settings.theme != config.settings.theme
+        && let Err(error) = actions::apply_theme(&app, config.settings.theme)
+    {
+        let _ = app.emit("notice", error);
+    }
+    if current.entries != config.entries
+        || current.settings.standby != config.settings.standby
+        || current.settings.display_id != config.settings.display_id
+    {
+        *store.prepared.lock().map_err(|e| e.to_string())? = None;
+    }
     *current = config;
-    *store.prepared.lock().map_err(|e| e.to_string())? = None;
     app.emit("changed", ()).map_err(|e| e.to_string())
 }
 
@@ -40,16 +51,27 @@ pub async fn inspect_native(op: String) -> Result<NativeReply, String> {
     if !["snapshot", "displays", "permissions", "requestPermissions"].contains(&op.as_str()) {
         return Err("지원하지 않는 조회입니다.".into());
     }
-    tauri::async_runtime::spawn_blocking(move || native::call(json!({"op":op})))
-        .await
-        .map_err(|e| e.to_string())?
+    static INSPECTING: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+    let guard = native::BusyGuard::acquire(&INSPECTING)
+        .ok_or("목록을 조회 중입니다. 잠시 후 다시 시도하세요.")?;
+    tauri::async_runtime::spawn_blocking(move || {
+        let _guard = guard;
+        native::call(json!({"op":op}))
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
 pub async fn activate_entry(app: AppHandle, id: String, send: bool) -> Result<NativeReply, String> {
-    tauri::async_runtime::spawn_blocking(move || actions::perform(&app, &id, send))
-        .await
-        .map_err(|e| e.to_string())?
+    static ACTIVATING: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+    let guard = native::BusyGuard::acquire(&ACTIVATING).ok_or("이전 화면을 전환 중입니다.")?;
+    tauri::async_runtime::spawn_blocking(move || {
+        let _guard = guard;
+        actions::perform(&app, &id, send)
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
@@ -59,18 +81,18 @@ pub fn toggle_panel(app: AppHandle) -> Result<(), String> {
 
 #[tauri::command]
 pub async fn refresh_displays(app: AppHandle) -> Result<NativeReply, String> {
-    let reply = inspect_native("displays".into()).await?;
-    if reply.displays.as_ref().is_some_and(|d| d.len() < 2) {
-        let store = app.state::<Store>();
-        let mut config = store.config.lock().map_err(|e| e.to_string())?;
-        if config.settings.standby {
-            config.settings.standby = false;
-            *store.prepared.lock().map_err(|e| e.to_string())? = None;
-            store.persist(&config)?;
-            app.emit("changed", ()).map_err(|e| e.to_string())?;
-        }
-    }
-    Ok(reply)
+    static REFRESHING: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+    let guard = native::BusyGuard::acquire(&REFRESHING).ok_or("모니터 정보를 확인 중입니다.")?;
+    tauri::async_runtime::spawn_blocking(move || {
+        let _guard = guard;
+        crate::displays::refresh(&app).map(|displays| NativeReply {
+            ok: true,
+            displays: Some(displays),
+            ..NativeReply::default()
+        })
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]

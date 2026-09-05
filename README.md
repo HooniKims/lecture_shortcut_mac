@@ -1,6 +1,6 @@
 # Cue for macOS
 
-강의 중 앱·창·브라우저 탭을 단축키로 불러오는 macOS 앱입니다. 선택한 **C / Studio** 디자인을 Tauri 2와 Swift로 구현했습니다. 현재 버전은 0.1.0 개발 프리뷰입니다.
+강의 중 앱·창·브라우저 탭을 단축키로 불러오는 macOS 앱입니다. **C / Studio** 어두운 테마와 **B / Paper** 밝은 테마를 Tauri 2와 Swift로 구현했습니다. 현재 버전은 0.1.0 개발 프리뷰입니다.
 
 ## 사용 방법
 
@@ -16,6 +16,8 @@
 | `⌘ ⇧ 0` | 현재 앞에 있는 창/탭 빠른 등록 |
 | `⌘ ⇧ Space` | 발표자 패널 표시/숨김 |
 | `⌘ ⇧ Return` | 대기 중인 화면 송출 |
+
+환경 설정의 **화면 테마**에서 Studio와 Paper를 선택하고 저장합니다. 메인 화면과 발표자 패널에 함께 적용되며 재시작 후에도 유지됩니다.
 
 환경 설정에서 기능 단축키도 변경합니다. 등록 충돌은 저장 단계에서 안내합니다. 창을 닫아도 메뉴 막대에서 실행되며, 완전히 종료하려면 Cue 메뉴의 종료를 사용합니다.
 
@@ -52,6 +54,6 @@ pnpm build
 - `src-tauri/src/`: 전역 단축키, 설정 저장, 프리셋, 창 관리.
 - `native/`: Swift macOS 창·탭 제어. [지원 범위와 테스트](native/README.md).
 - `design/mockups/`: 이전 디자인 비교용 목업, 실제 앱과 분리되어 있습니다.
-- [합의 요구사항](docs/requirements.md), [검증 기록](docs/evidence/implementation-qa.md).
+- [합의 요구사항](docs/requirements.md), [검증 기록](docs/evidence/implementation-qa.md), [테마·자원 점검](docs/evidence/theme-resource-review.md).
 
 UI는 요청에 따라 ego-browser에서 IPC 테스트 대역을 사용해 검증하고, 설치형 앱은 별도로 실제 Tauri 창과 시스템 단축키로 확인합니다. 브라우저 UI 검증을 OS 제어 검증으로 간주하지 않습니다.

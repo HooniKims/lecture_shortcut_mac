@@ -1,7 +1,21 @@
-use crate::{model::NativeReply, native, store::Store};
+use crate::{
+    model::{NativeReply, Theme},
+    native,
+    store::Store,
+};
 use serde_json::json;
 use std::sync::atomic::Ordering;
 use tauri::{AppHandle, Emitter, Manager};
+
+pub fn apply_theme(app: &AppHandle, theme: Theme) -> Result<(), String> {
+    app.set_theme(Some(theme.native()));
+    for window in app.webview_windows().values() {
+        window
+            .set_theme(Some(theme.native()))
+            .map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
 
 pub fn panel(app: &AppHandle) -> Result<(), String> {
     let win = app
@@ -37,18 +51,19 @@ pub fn perform(app: &AppHandle, id: &str, send: bool) -> Result<NativeReply, Str
 
 fn perform_inner(app: &AppHandle, id: &str, send: bool) -> Result<NativeReply, String> {
     let store = app.state::<Store>();
-    let config = store.config.lock().map_err(|e| e.to_string())?.clone();
-    let entry = config
-        .entries
-        .iter()
-        .find(|e| e.id == id)
-        .ok_or("등록한 항목을 찾을 수 없습니다.")?;
-    let displays = native::call(json!({"op":"displays"}))?
-        .displays
-        .unwrap_or_default();
-    let standby = config.settings.standby && displays.len() > 1;
-    let display = config
-        .settings
+    let (entry, settings) = {
+        let config = store.config.lock().map_err(|e| e.to_string())?;
+        let entry = config
+            .entries
+            .iter()
+            .find(|e| e.id == id)
+            .ok_or("등록한 항목을 찾을 수 없습니다.")?
+            .clone();
+        (entry, config.settings.clone())
+    };
+    let displays = crate::displays::refresh(app)?;
+    let standby = settings.standby && displays.len() > 1;
+    let display = settings
         .display_id
         .as_ref()
         .and_then(|id| displays.iter().find(|d| &d.id == id))
@@ -72,10 +87,12 @@ fn perform_inner(app: &AppHandle, id: &str, send: bool) -> Result<NativeReply, S
         };
     if let Some(target) = &reply.target {
         let mut current = store.config.lock().map_err(|e| e.to_string())?;
-        if let Some(item) = current.entries.iter_mut().find(|e| e.id == id) {
+        if let Some(item) = current.entries.iter_mut().find(|e| e.id == id)
+            && item.target != *target
+        {
             item.target = target.clone();
+            store.persist(&current)?;
         }
-        store.persist(&current)?;
     }
     app.emit("action", json!({"id":id,"outcome":reply.outcome}))
         .map_err(|e| e.to_string())?;
@@ -93,7 +110,12 @@ pub fn capture(app: &AppHandle) -> Result<(), String> {
 }
 
 pub fn dispatch(app: AppHandle, action: String) {
+    static DISPATCHING: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+    let Some(guard) = native::BusyGuard::acquire(&DISPATCHING) else {
+        return;
+    };
     tauri::async_runtime::spawn_blocking(move || {
+        let _guard = guard;
         let result = match action.as_str() {
             "panel" => panel(&app),
             "capture" => capture(&app),

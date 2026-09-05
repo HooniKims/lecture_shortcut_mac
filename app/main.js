@@ -16,13 +16,6 @@ function notice(message) {
   clearTimeout(notice.timer); notice.timer = setTimeout(() => toast.classList.remove('show'), 6500);
 }
 async function save(next) { await invoke('save_config', { config: next }); await refresh(); }
-async function refresh() {
-  const state = await invoke('get_state');
-  config = state.config; prepared = state.prepared;
-  if (!config.entries.some(e => e.id === selected)) selected = config.entries[0]?.id || null;
-  if (state.startupError && !startupShown) { startupShown = true; notice(state.startupError); }
-  render();
-}
 function modeLabel() { return config.settings.standby && displays.length > 1 ? '대기 모드' : '즉시 송출'; }
 function monitorLabel() { return (displays.find(d => d.id === config.settings.displayId) || displays.find(d => !d.primary) || displays[0])?.name || '모니터 확인 중'; }
 function tile(entry, compact = false) {
@@ -33,8 +26,7 @@ function tile(entry, compact = false) {
 function render() {
   document.body.classList.toggle('panel', isPanel);
   if (isPanel) { renderPanel(); return; }
-  const filtered = config.entries.filter(e => `${e.label} ${e.target.app}`.toLowerCase().includes(search.toLowerCase()));
-  root.innerHTML = `<div class="shell"><aside class="sidebar"><div class="brand"><span class="cue-mark">c</span><span>cue<small>STUDIO</small></span></div>
+  root.innerHTML = `<div class="shell"><aside class="sidebar"><div class="brand"><span class="cue-mark">c</span><span>cue<small>${config.settings.theme === 'paper' ? 'PAPER' : 'STUDIO'}</small></span></div>
     <button class="nav-item current" data-action="all">${icon('grid')}내 화면<span>${config.entries.length}</span></button>
     <div class="nav-heading">강의 프리셋<button class="icon-button" data-action="preset" aria-label="현재 목록을 프리셋으로 저장">${icon('plus')}</button></div>
     <div class="presets">${config.presets.map(p => `<div class="preset-row"><button class="nav-item" data-preset="${escapeText(p.id)}">${icon('folder')}<span>${escapeText(p.name)}</span></button><button class="icon-button quiet" data-delete-preset="${escapeText(p.id)}" aria-label="${escapeText(p.name)} 프리셋 삭제">${icon('close')}</button></div>`).join('') || '<p class="sidebar-note">강의마다 필요한 화면을<br>프리셋으로 저장하세요.</p>'}</div>
@@ -42,10 +34,28 @@ function render() {
     <main class="workspace"><header class="workspace-header"><div><p class="eyebrow">YOUR LECTURE, IN CONTROL</p><h1>내 화면</h1><p class="secondary">필요한 순간, 한 번의 단축키로.</p></div><button class="button primary" data-action="add">${icon('plus')}화면 등록</button></header>
     <button class="monitor-bar" data-action="settings">${icon('monitor')}<span><strong>${escapeText(monitorLabel())}</strong><small>${displays.length > 1 ? '청중에게 보여줄 모니터' : '현재 모니터에서 전환'}</small></span><span class="mode"><i></i>${modeLabel()}</span>${icon('chevron')}</button>
     <div class="list-toolbar"><label class="search">${icon('search')}<input id="search" type="search" placeholder="등록한 화면 검색" aria-label="등록한 화면 검색" value="${escapeText(search)}"></label><span>${config.entries.length}개 등록됨</span></div>
-    <div class="pad-grid">${filtered.map(e => tile(e)).join('')}</div>
-    ${!config.entries.length ? `<div class="empty"><span class="empty-symbol">${icon('keyboard')}</span><h2>다음 화면을 준비해 보세요</h2><p>열려 있는 앱, 창, 브라우저 탭을 골라<br>나만의 단축키에 연결하세요.</p><button class="button primary" data-action="add">${icon('plus')}첫 화면 등록</button><small>직접 띄운 화면은 ${keycap(config.settings.captureShortcut)} 로 등록</small></div>` : !filtered.length ? '<div class="empty"><h2>검색 결과가 없습니다</h2><p>이름이나 앱 이름으로 다시 검색해 보세요.</p></div>' : '<p class="hint">패드를 선택해 편집하고, 단축키를 눌러 화면을 전환하세요.</p>'}
+    <div class="pad-grid">${config.entries.map(e => tile(e)).join('')}</div><div class="empty search-empty" hidden><h2>검색 결과가 없습니다</h2><p>이름이나 앱 이름으로 다시 검색해 보세요.</p></div>
+    ${!config.entries.length ? `<div class="empty"><span class="empty-symbol">${icon('keyboard')}</span><h2>다음 화면을 준비해 보세요</h2><p>열려 있는 앱, 창, 브라우저 탭을 골라<br>나만의 단축키에 연결하세요.</p><button class="button primary" data-action="add">${icon('plus')}첫 화면 등록</button><small>직접 띄운 화면은 ${keycap(config.settings.captureShortcut)} 로 등록</small></div>` : '<p class="hint">패드를 선택해 편집하고, 단축키를 눌러 화면을 전환하세요.</p>'}
     <footer class="workspace-footer"><span>${icon('keyboard')}같은 단축키를 다시 누르면 최소화</span><button class="button" data-action="panel">${icon('panel')}발표자 패널</button></footer></main>
     <aside class="inspector">${inspector()}</aside></div>`;
+  filterPads();
+}
+function filterPads() {
+  const query = search.toLowerCase();
+  let visible = 0;
+  for (const pad of root.querySelectorAll('.pad-grid .pad')) {
+    pad.hidden = !pad.textContent.toLowerCase().includes(query);
+    if (!pad.hidden) visible++;
+  }
+  const empty = root.querySelector('.search-empty');
+  if (empty) empty.hidden = visible > 0 || config.entries.length === 0;
+}
+function updatePads() {
+  for (const pad of root.querySelectorAll('.pad')) {
+    const id = pad.dataset.select || pad.dataset.activate;
+    pad.classList.toggle('active', active === id);
+    pad.querySelector('.pad-status').textContent = prepared === id ? '대기' : active === id ? '마지막 호출' : '';
+  }
 }
 function inspector() {
   const entry = config.entries.find(e => e.id === selected);
@@ -65,7 +75,7 @@ async function activate(id, send = false) {
   try { const result = await invoke('activate_entry', { id, send }); notice(({shown:'화면을 불러왔습니다.', minimized:'화면을 최소화했습니다.', prepared:'화면을 준비했습니다.', reopened:'닫힌 화면을 다시 열었습니다.'})[result.outcome] || '화면 전환 완료'); }
   catch (error) { notice(error); }
 }
-document.addEventListener('click', async event => {
+on(document, 'click', async event => {
   const button = event.target.closest('button'); if (!button) return;
   try {
     if (button.dataset.select) { selected = button.dataset.select; render(); }
@@ -84,10 +94,10 @@ document.addEventListener('click', async event => {
     }
   } catch (error) { notice(error); }
 });
-document.addEventListener('input', event => {
-  if (event.target.id === 'search') { search = event.target.value; render(); document.getElementById('search').focus(); }
+on(document, 'input', event => {
+  if (event.target.id === 'search') { search = event.target.value; filterPads(); }
 });
-document.addEventListener('submit', async event => {
+on(document, 'submit', async event => {
   if (event.target.id !== 'edit-form') return;
   event.preventDefault();
   const data = new FormData(event.target); const next = structuredClone(config);
@@ -97,18 +107,4 @@ document.addEventListener('submit', async event => {
   try { await save(next); notice('변경 사항을 저장했습니다.'); } catch (error) { notice(error); }
 });
 
-async function pollDisplays() {
-  if (displayPolling) return; displayPolling = true;
-  try { const reply = await invoke('refresh_displays'); const next = reply.displays || []; if (JSON.stringify(next) !== JSON.stringify(displays)) { displays = next; render(); } }
-  catch (error) { if (!displays.length) notice(error); } finally { displayPolling = false; }
-}
-async function boot() {
-  if (!api) { root.innerHTML = '<div class="empty"><h1>Cue 앱에서 열어 주세요</h1><p>이 화면은 설치된 macOS 앱에서 실제 창과 연결됩니다.</p></div>'; return; }
-  await api.event.listen('recorded-shortcut', event => { const field = document.activeElement; if (field.matches('[data-hotkey]')) field.value = event.payload; });
-  await api.event.listen('changed', () => refresh().catch(notice));
-  await api.event.listen('notice', event => notice(event.payload));
-  await api.event.listen('action', event => { active = event.payload.outcome === 'minimized' ? null : event.payload.id; render(); });
-  if (!isPanel) await api.event.listen('captured', event => addDialog(event.payload).catch(notice));
-  await refresh(); await pollDisplays(); setInterval(pollDisplays, 3000);
-}
 boot().catch(notice);

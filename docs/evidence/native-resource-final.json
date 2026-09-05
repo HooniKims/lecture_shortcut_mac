@@ -1,0 +1,24 @@
+{
+  "scope": "Final packaged release restarted after bundle completion. Main process only; excludes WebKit.8s idle sample. leaks restricted read-only analysis; not proof of no leaks.",
+  "first": {
+    "rssKiB": 107312,
+    "cpu": 0.0
+  },
+  "last": {
+    "rssKiB": 101392,
+    "cpu": 0.0
+  },
+  "maxRSSKiB": 107312,
+  "leaksExit": 1,
+  "leaksSummary": [
+    "Physical footprint:         27.5M",
+    "Process 76708: 288 leaks for 14400 total leaked bytes.",
+    "      96 (4.69K) ROOT CYCLE: <NSXPCConnection 0xb9f078e60> [160]  Protocol: LNDaemonApplicationInterface  Connection: <couldn't read name> [no process]",
+    "         1 (48 bytes) _interruptionHandler --> <__NSMallocBlock__ 0xb9ecc50b0> [48]  AppIntents  __52-[LNProcessInstanceRegistryClient makeXPCConnection]_block_invoke  0x22859d404",
+    "      96 (4.69K) ROOT CYCLE: <NSXPCConnection 0xb9f079180> [160]  Protocol: LNDaemonApplicationInterface  Connection: <couldn't read name> [no process]",
+    "         1 (48 bytes) _interruptionHandler --> <__NSMallocBlock__ 0xb9ecc6790> [48]  AppIntents  __52-[LNProcessInstanceRegistryClient makeXPCConnection]_block_invoke  0x22859d404",
+    "      96 (4.69K) ROOT CYCLE: <NSXPCConnection 0xb9f0794a0> [160]  Protocol: LNDaemonApplicationInterface  Connection: <couldn't read name> [no process]",
+    "         1 (48 bytes) _interruptionHandler --> <__NSMallocBlock__ 0xb9ecc5500> [48]  AppIntents  __52-[LNProcessInstanceRegistryClient makeXPCConnection]_block_invoke  0x22859d404",
+    "Process 76708 is not debuggable. Due to security restrictions, leaks can only show or save contents of readonly memory of restricted processes."
+  ]
+}

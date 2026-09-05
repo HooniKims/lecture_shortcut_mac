@@ -1,0 +1,6 @@
+normal: expected_result=true elapsed=0.07s child_count=0 threads_returned_to_baseline=true
+stderr: expected_result=true elapsed=0.05s child_count=0 threads_returned_to_baseline=true
+early: expected_result=true elapsed=0.12s child_count=0 threads_returned_to_baseline=true
+timeout: expected_result=true elapsed=60.07s child_count=0 threads_returned_to_baseline=true
+parallel: two admitted, third rejected, child_count=0 threads_returned_to_baseline=true
+busy guard: rejects overlap, releases on drop

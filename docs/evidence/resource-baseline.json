@@ -1,0 +1,22 @@
+{
+  "scope": "running previous release, 12 second sampling; transient helper count lower bound",
+  "uniqueHelperPidsObserved": 0,
+  "first": [
+    {
+      "pid": 52102,
+      "parent": 1,
+      "rssKiB": 105296,
+      "cpu": 0.0,
+      "helper": false
+    }
+  ],
+  "last": [
+    {
+      "pid": 52102,
+      "parent": 1,
+      "rssKiB": 105296,
+      "cpu": 0.0,
+      "helper": false
+    }
+  ]
+}

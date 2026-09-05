@@ -1,4 +1,4 @@
-use crate::model::Config;
+use crate::model::{Config, Display, Entry, Preset, Settings};
 use std::{
     path::PathBuf,
     sync::{Mutex, atomic::AtomicBool},
@@ -7,6 +7,7 @@ use tauri::{AppHandle, Manager};
 
 pub struct Store {
     pub config: Mutex<Config>,
+    pub displays: Mutex<Option<(String, Vec<Display>)>>,
     pub prepared: Mutex<Option<String>>,
     pub busy: AtomicBool,
     pub recording: AtomicBool,
@@ -40,6 +41,7 @@ impl Store {
         }
         Ok(Self {
             config: Mutex::new(config),
+            displays: Mutex::new(None),
             prepared: Mutex::new(None),
             busy: AtomicBool::new(false),
             recording: AtomicBool::new(false),
@@ -61,10 +63,21 @@ impl Store {
                 std::fs::copy(&self.path, backup).map_err(|e| e.to_string())?;
             }
         }
-        let mut disk = config.clone();
-        if !disk.settings.restore {
-            disk.entries.clear();
+        #[derive(serde::Serialize)]
+        struct DiskConfig<'a> {
+            entries: &'a [Entry],
+            settings: &'a Settings,
+            presets: &'a [Preset],
         }
+        let disk = DiskConfig {
+            entries: if config.settings.restore {
+                &config.entries
+            } else {
+                &[]
+            },
+            settings: &config.settings,
+            presets: &config.presets,
+        };
         let bytes = serde_json::to_vec_pretty(&disk).map_err(|e| e.to_string())?;
         let temp = self.path.with_extension("tmp");
         std::fs::write(&temp, bytes).map_err(|e| e.to_string())?;

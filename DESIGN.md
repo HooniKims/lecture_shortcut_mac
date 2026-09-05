@@ -51,3 +51,7 @@ A/C: subtle white inset top rim, dark outer border, layered key/pad bevels. Floa
 ## 8. Accessibility Constraints & Accepted Debt
 Visible focus ring, named inputs/buttons, aria-pressed for tabs and toggles, native dialog, no one-character CJK orphaning, reduced motion. At small sizes content reflows.
 Accepted scope: explicitly requested throwaway design mockups; native switching, OS shortcuts, browser integration, real monitor discovery and installation are outside this artifact. C / Studio has been selected; native application implementation remains separate.
+
+## 9. Runtime theme selection
+
+The user requested B / Paper as a selectable light theme alongside C / Studio. Keep the current functional layout while adopting Paper's white surface (#ffffff), mist sidebar (#f5f6f8), graphite text (#282d36), muted text (#727883), blue accent (#2874dc) and pale-blue selection (#eaf2ff). All screen, inspector, dialog, input, keycap, toast, warning and presenter surfaces use shared semantic color tokens. Studio remains the default for existing configurations. Theme choice is stored with settings independently of registration restoration, synchronized across main/presenter windows, and applied to native window chrome. No animation or extra runtime dependency is needed for switching.
