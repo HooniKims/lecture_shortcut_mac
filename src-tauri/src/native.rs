@@ -73,6 +73,26 @@ fn read_bounded(mut stream: impl Read, limit: usize) -> std::io::Result<Vec<u8>>
     Ok(bytes)
 }
 
+pub(crate) fn child_has_exited(child_id: u32) -> std::io::Result<bool> {
+    // SAFETY: [Category 5 — invalid values] Darwin's `siginfo_t` contains integer fields,
+    // a nullable raw pointer, and integer padding, for which an all-zero value is valid.
+    let mut info = unsafe { std::mem::MaybeUninit::<libc::siginfo_t>::zeroed().assume_init() };
+    // SAFETY: [Category 8 — FFI boundary] libc supplies Darwin's waitid(2) ABI, `info`
+    // is writable for a full `siginfo_t`, and P_PID restricts observation to our child.
+    let result = unsafe {
+        libc::waitid(
+            libc::P_PID,
+            child_id,
+            &mut info,
+            libc::WEXITED | libc::WNOHANG | libc::WNOWAIT,
+        )
+    };
+    if result == -1 {
+        return Err(std::io::Error::last_os_error());
+    }
+    Ok(info.si_pid != 0)
+}
+
 pub fn call(request: Value) -> Result<NativeReply, String> {
     let exe = std::env::current_exe().map_err(|e| e.to_string())?;
     let parent = exe.parent().ok_or("실행 경로를 찾을 수 없습니다.")?;
@@ -153,7 +173,7 @@ pub(crate) fn call_with(
                     .map_err(|_| "제어 요청 쓰기 실패")?
                     .map_err(|e| e.to_string())?;
             }
-            if child.child.try_wait().map_err(|e| e.to_string())?.is_some() {
+            if child_has_exited(child.group_id).map_err(|e| e.to_string())? {
                 break;
             }
             if started.elapsed() > timeout {

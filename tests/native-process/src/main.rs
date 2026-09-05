@@ -11,6 +11,7 @@ mod native;
 
 use serde_json::json;
 use std::{
+    os::unix::process::CommandExt,
     path::PathBuf,
     process::Command,
     sync::atomic::AtomicBool,
@@ -54,8 +55,32 @@ fn assert_clean(baseline_threads: usize, scenario: &str) {
     );
 }
 
+fn assert_exit_probe_preserves_ownership() {
+    let mut command = Command::new("/bin/sh");
+    command.args(["-c", "exit 0"]).process_group(0);
+    let mut child = command.spawn().expect("spawn exit probe fixture");
+    let deadline = Instant::now() + Duration::from_secs(2);
+    while !native::child_has_exited(child.id()).expect("probe child exit") {
+        assert!(Instant::now() < deadline, "exit probe timed out");
+        std::thread::sleep(Duration::from_millis(1));
+    }
+    let state = Command::new("ps")
+        .args(["-o", "state=", "-p", &child.id().to_string()])
+        .output()
+        .expect("inspect exit probe state");
+    let state = String::from_utf8_lossy(&state.stdout);
+    assert!(
+        state.trim_start().starts_with('Z'),
+        "non-reaping exit probe lost child ownership: {state:?}"
+    );
+    child.wait().expect("reap exit probe fixture");
+    println!("exit_probe: state=zombie ownership=retained reap=ok");
+}
+
 fn main() {
     let baseline_threads = thread_count();
+    assert_exit_probe_preserves_ownership();
+    assert_clean(baseline_threads, "exit probe");
 
     for scenario in ["normal", "stderr"] {
         let reply = if scenario == "normal" {
