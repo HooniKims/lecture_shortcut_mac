@@ -7,8 +7,27 @@ let displayPolling = false;
 const invoke = (command, args = {}) => api.core.invoke(command, args);
 const kindName = kind => ({ app: '앱', window: '창', tab: '브라우저 탭' })[kind] || kind;
 const defaultName = target => target.title || target.app;
-const prettyKey = key => key.replace(/CommandOrControl|CmdOrCtrl|Super|Command/gi, '⌘').replace(/Control|Ctrl/gi, '⌃').replace(/Shift/gi, '⇧').replace(/Alt|Option/gi, '⌥').replace(/(?:Key|Digit)([a-z0-9])/gi, '$1').replace(/Arrow/gi, '').replaceAll('+', ' ');
+const shortcutGlyphs = {
+  commandorcontrol: '⌘', cmdorctrl: '⌘', super: '⌘', command: '⌘', cmd: '⌘', meta: '⌘',
+  control: '⌃', ctrl: '⌃', shift: '⇧', alt: '⌥', option: '⌥',
+  enter: '↩', return: '↩', space: '␣', tab: '⇥', escape: '⎋', esc: '⎋',
+  arrowleft: '←', left: '←', arrowright: '→', right: '→', arrowup: '↑', up: '↑', arrowdown: '↓', down: '↓',
+  backspace: '⌫', delete: '⌦', home: '↖', end: '↘', pageup: '⇞', pagedown: '⇟',
+};
+const prettyKey = key => key.split('+').map(part => {
+  const token = part.trim();
+  return shortcutGlyphs[token.toLowerCase()] || token.replace(/^(?:Key|Digit)([a-z0-9])$/i, '$1');
+}).join(' ');
 const keycap = key => keys(prettyKey(key));
+function shortcutPreview(value) {
+  return `${value ? keycap(value) : '<span class="shortcut-placeholder">원하는 키 조합 누르기</span>'}${icon('keyboard')}`;
+}
+function shortcutField(name, value, describedBy = '') {
+  return `<span class="shortcut-field"><input name="${escapeText(name)}" class="shortcut-input" data-hotkey value="${escapeText(value)}" ${describedBy ? `aria-describedby="${escapeText(describedBy)}"` : ''} autocomplete="off" spellcheck="false" required><span class="shortcut-preview" aria-hidden="true">${shortcutPreview(value)}</span></span>`;
+}
+function updateShortcutPreview(field) {
+  field.nextElementSibling.innerHTML = shortcutPreview(field.value);
+}
 const targetIcon = target => icon(target.kind === 'tab' ? 'browser' : target.kind === 'window' ? 'monitor' : 'grid');
 function notice(message) {
   const toast = document.getElementById('toast');
@@ -61,7 +80,7 @@ function inspector() {
   const entry = config.entries.find(e => e.id === selected);
   if (!entry) return `<p class="eyebrow">SCREEN DETAILS</p><div class="inspector-empty">${icon('grid')}<h3>화면을 연결하세요</h3><p>등록한 화면의 이름과<br>단축키를 여기서 수정합니다.</p></div><div class="tip"><strong>발표자를 위한 작은 패널</strong><p>등록 목록을 다른 모니터에 띄워두고 편하게 확인하세요.</p>${keycap(config.settings.panelShortcut)}</div>`;
   return `<p class="eyebrow">SCREEN DETAILS</p><div class="identity"><span class="target-symbol">${targetIcon(entry.target)}</span><h2>${escapeText(entry.label)}</h2><p>${escapeText(entry.target.app)} · ${kindName(entry.target.kind)}</p></div>
-    <form id="edit-form"><label>표시 이름<input name="label" value="${escapeText(entry.label)}" placeholder="${escapeText(defaultName(entry.target))}"></label><label>단축키<input name="shortcut" class="shortcut-input" data-hotkey value="${escapeText(entry.shortcut)}" aria-describedby="shortcut-help" required></label><p id="shortcut-help" class="field-help">필드를 누른 후 원하는 키 조합을 누르세요.</p>
+    <form id="edit-form"><label>표시 이름<input name="label" value="${escapeText(entry.label)}" placeholder="${escapeText(defaultName(entry.target))}"></label><label>단축키${shortcutField('shortcut', entry.shortcut, 'shortcut-help')}</label><p id="shortcut-help" class="field-help">필드를 누른 후 원하는 키 조합을 누르세요.</p>
     ${entry.target.kind === 'tab' ? `<label>송출할 때<select name="tabMode"><option value="detach" ${entry.tabMode === 'detach' ? 'selected' : ''}>이 탭만 새 창으로 이동</option><option value="window" ${entry.tabMode === 'window' ? 'selected' : ''}>브라우저 창 전체 이동</option></select></label>` : ''}
     <div class="source-info"><span>연결된 원래 화면</span><p>${escapeText(defaultName(entry.target))}</p></div><button class="button full" type="submit">${icon('check')}변경 저장</button></form>
     <button class="button primary full" data-activate="${escapeText(entry.id)}">${icon('play')}${config.settings.standby && displays.length > 1 ? '이 화면 준비' : '화면 띄우기'}</button>
@@ -96,6 +115,7 @@ on(document, 'click', async event => {
 });
 on(document, 'input', event => {
   if (event.target.id === 'search') { search = event.target.value; filterPads(); }
+  if (event.target.matches('[data-hotkey]')) updateShortcutPreview(event.target);
 });
 on(document, 'submit', async event => {
   if (event.target.id !== 'edit-form') return;

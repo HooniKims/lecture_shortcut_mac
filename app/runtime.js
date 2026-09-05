@@ -63,7 +63,7 @@ async function scheduleDisplayCheck() {
 }
 async function boot() {
   if (!api) { root.innerHTML = '<div class="empty"><h1>Cue 앱에서 열어 주세요</h1><p>이 화면은 설치된 macOS 앱에서 실제 창과 연결됩니다.</p></div>'; return; }
-  await subscribe('recorded-shortcut', event => { const field = document.activeElement; if (field.matches('[data-hotkey]')) field.value = event.payload; });
+  await subscribe('recorded-shortcut', event => { const field = document.activeElement; if (field.matches('[data-hotkey]')) { field.value = event.payload; updateShortcutPreview(field); } });
   await subscribe('changed', () => refresh(true).catch(notice));
   await subscribe('displays-changed', event => updateDisplays(event.payload));
   await subscribe('notice', event => notice(event.payload));

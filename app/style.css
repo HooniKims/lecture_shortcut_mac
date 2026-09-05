@@ -71,7 +71,7 @@ strong{font-weight:600}
 .pad>.key-combo{position:absolute;top:10px;right:10px}
 .key-combo{display:inline-flex;gap:3px;white-space:nowrap}
 kbd{font:11px ui-monospace,SFMono-Regular,Menlo,monospace;min-width:18px;padding:2px 4px;background:var(--key-bg);border:1px solid var(--key-border);border-bottom-width:2px;border-radius:4px;text-align:center;color:var(--key-ink)}
-.pad kbd{font-size:9px;background:none;border:0;padding:0;min-width:8px}
+.pad kbd{font-size:11px;padding:1px 3px;min-width:16px}
 .pad-status{position:absolute;top:12px;left:10px;color:var(--accent);font-size:8px}
 .hint{font-size:10px;color:var(--secondary);margin:20px 0}
 .workspace-footer{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:22px 0 20px}
@@ -86,7 +86,15 @@ label{display:block;font-size:11px;color:var(--secondary)}
 label>input,label>select{display:block;margin-top:8px}
 form label+label{margin-top:18px}
 .field-help{font-size:10px;line-height:1.6;color:var(--secondary);margin:8px 0 16px}
-.shortcut-input{font-size:11px}
+.shortcut-field{position:relative;display:block;min-width:0;margin-top:8px}
+.shortcut-field .shortcut-input{display:block;height:44px;margin:0;color:transparent;caret-color:transparent;font-size:13px;cursor:pointer}
+.shortcut-field .shortcut-input::selection{color:transparent;background:transparent}
+.shortcut-preview{position:absolute;inset:0;display:flex;align-items:center;gap:8px;padding:0 12px;pointer-events:none;overflow:hidden}
+.shortcut-preview .key-combo{gap:4px;min-width:0}
+.shortcut-preview kbd{font-size:13px;min-width:24px;padding:2px 4px}
+.shortcut-preview>.icon{margin-left:auto;width:16px;height:16px;color:var(--secondary)}
+.shortcut-field:focus-within .shortcut-preview>.icon{color:var(--accent)}
+.shortcut-placeholder{font-size:11px;color:var(--secondary)}
 .source-info{margin-top:24px;padding-top:18px;border-top:1px solid var(--border-soft)}
 .source-info>span{font-size:10px;color:var(--secondary)}
 .source-info p{font-size:11px;line-height:1.6;margin-top:7px;overflow-wrap:anywhere;color:var(--secondary)}
@@ -135,7 +143,7 @@ dialog::backdrop{background:var(--backdrop);backdrop-filter:blur(3px)}
 .toggle-row strong{font-size:12px;color:var(--text)}
 .toggle-row small{display:block;font-size:11px;margin-top:6px;line-height:1.5}
 .shortcut-settings>label{display:flex;align-items:center;justify-content:space-between;gap:14px}
-.shortcut-settings input{width:240px;margin:0;font-size:11px}
+.shortcut-settings .shortcut-field{width:240px;max-width:60%;margin:0;flex-shrink:0}
 .permission-line{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--secondary)}
 .permission-line button{font-size:11px}
 .permission-banner{border:1px solid var(--warning-border);background:var(--warning-bg);color:var(--warning-ink);border-radius:8px;padding:13px;margin-bottom:12px;font-size:12px}

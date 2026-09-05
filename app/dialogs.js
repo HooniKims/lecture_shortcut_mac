@@ -37,7 +37,7 @@ async function addDialog(captured = null) {
     <div class="picker-tools"><label class="search">${icon('search')}<input id="target-search" type="search" placeholder="앱, 창 또는 탭 검색" aria-label="등록할 대상 검색"></label><button type="button" id="rescan" class="button">새로고침</button></div>
     <div id="permission-note"></div><div id="target-picker" class="target-picker" role="group" aria-label="등록할 화면">목록을 불러오는 중…</div><p id="browser-note" class="field-help">탭 제어를 제공하지 않는 브라우저도 앱·창으로 등록할 수 있습니다.</p>
     <label>표시 이름<input name="label" id="add-name" placeholder="선택한 화면의 제목" value="${captured ? escapeText(defaultName(captured)) : ''}"></label>
-    <div class="form-columns"><label>단축키<input name="shortcut" data-hotkey class="shortcut-input" value="${nextShortcut()}" placeholder="원하는 키 조합 누르기" required></label><label>탭 이동 방식<select name="tabMode" id="add-tab-mode"><option value="detach">이 탭만 새 창으로 이동</option><option value="window">브라우저 창 전체 이동</option></select></label></div>
+    <div class="form-columns"><label>단축키${shortcutField('shortcut', nextShortcut())}</label><label>탭 이동 방식<select name="tabMode" id="add-tab-mode"><option value="detach">이 탭만 새 창으로 이동</option><option value="window">브라우저 창 전체 이동</option></select></label></div>
     ${dialogFooter('등록하기')}`, async data => {
     if (!selectedTarget) throw new Error('등록할 화면을 선택해 주세요.');
     const next = structuredClone(config); const id = crypto.randomUUID();
@@ -85,7 +85,7 @@ async function settingsDialog() {
     <section class="settings-section"><h3>${icon('monitor')}화면과 송출</h3><label>청중에게 보여줄 모니터<select name="displayId">${displays.map(d => `<option value="${escapeText(d.id)}" ${d.id === (s.displayId || displays.find(item => !item.primary)?.id || displays[0]?.id) ? 'selected' : ''}>${escapeText(d.name)}${d.primary ? ' · 기본 모니터' : ''}</option>`).join('')}</select></label>
     <label class="toggle-row"><span><strong>대기 모드</strong><small>${displays.length > 1 ? '원래 모니터에서 준비한 뒤 송출합니다.' : '모니터가 2대 이상일 때 사용할 수 있습니다.'}</small></span><input type="checkbox" name="standby" ${s.standby && displays.length > 1 ? 'checked' : ''} ${displays.length < 2 ? 'disabled' : ''}></label>
     <label class="toggle-row"><span><strong>재시작 후에도 등록 유지</strong><small>꺼도 직접 저장한 프리셋과 설정은 남습니다.</small></span><input type="checkbox" name="restore" ${s.restore ? 'checked' : ''}></label></section>
-    <section class="settings-section"><h3>${icon('keyboard')}기능 단축키</h3><div class="shortcut-settings"><label>발표자 패널 켜기·끄기<input name="panelShortcut" data-hotkey value="${escapeText(s.panelShortcut)}" required></label><label>현재 화면 등록<input name="captureShortcut" data-hotkey value="${escapeText(s.captureShortcut)}" required></label><label>대기 화면 송출<input name="sendShortcut" data-hotkey value="${escapeText(s.sendShortcut)}" required></label></div><p class="field-help">필드를 선택한 후 원하는 키 조합을 누르세요.</p></section>
+    <section class="settings-section"><h3>${icon('keyboard')}기능 단축키</h3><div class="shortcut-settings"><label>발표자 패널 켜기·끄기${shortcutField('panelShortcut', s.panelShortcut, 'settings-shortcut-help')}</label><label>현재 화면 등록${shortcutField('captureShortcut', s.captureShortcut, 'settings-shortcut-help')}</label><label>대기 화면 송출${shortcutField('sendShortcut', s.sendShortcut, 'settings-shortcut-help')}</label></div><p id="settings-shortcut-help" class="field-help">필드를 선택한 후 원하는 키 조합을 누르세요.</p></section>
     <section class="permission-line"><span>macOS 손쉬운 사용 권한</span><button id="permission-button" type="button" class="button">권한 확인·설정</button></section>${dialogFooter('설정 저장')}`, async data => {
     const next = structuredClone(config);
     next.settings = { theme: String(data.get('theme') || 'studio'), restore: data.has('restore'), standby: data.has('standby') && displays.length > 1, displayId: String(data.get('displayId') || '') || null, panelShortcut: String(data.get('panelShortcut')), captureShortcut: String(data.get('captureShortcut')), sendShortcut: String(data.get('sendShortcut')) };
@@ -126,6 +126,7 @@ on(document, 'keydown', event => {
   if (event.shiftKey) parts.push('Shift');
   const code = event.code.replace(/^Key/, '').replace(/^Digit/, '');
   parts.push(code); event.target.value = parts.join('+');
+  updateShortcutPreview(event.target);
 });
 
 on(document, "focusin", event => { if (event.target.matches("[data-hotkey]")) setShortcutRecording(true); });
