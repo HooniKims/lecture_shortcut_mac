@@ -1,0 +1,56 @@
+Process:         cue [7481]
+Path:            /private/tmp/*/Cue Audit.app/Contents/MacOS/cue
+Load Address:    0x100f88000
+Identifier:      dev.cue.audit
+Version:         0.1.0 (0.1.0)
+Code Type:       ARM64
+Platform:        macOS
+Parent Process:  codex [30530]
+Target Type:     live task
+
+Date/Time:       2026-09-05 11:57:52.370 +0900
+Launch Time:     2026-09-05 11:57:41.443 +0900
+OS Version:      macOS 26.6.2 (25G83)
+Report Version:  7
+Analysis Tool:   /usr/bin/leaks
+
+Physical footprint:         47.3M
+Physical footprint (peak):  48.1M
+Idle exit:                  untracked
+----
+
+leaks Report Version: 4.0, multi-line stacks
+Process 7481: 73016 nodes malloced for 11182 KB
+Process 7481: 288 leaks for 18816 total leaked bytes.
+
+STACK OF 3 INSTANCES OF 'ROOT CYCLE: <NSXPCConnection>':
+12  libsystem_pthread.dylib               0x181bb6c10 start_wqthread + 8
+11  libsystem_pthread.dylib               0x181bb7e84 _pthread_wqthread + 232
+10  libdispatch.dylib                     0x181a12120 _dispatch_worker_thread2 + 184
+9   libdispatch.dylib                     0x181a11adc _dispatch_root_queue_drain + 708
+8   libdispatch.dylib                     0x181a36d6c <deduplicated_symbol> + 28
+7   libdispatch.dylib                     0x181a194b0 _dispatch_client_callout + 16
+6   libdispatch.dylib                     0x1819ffa28 _dispatch_call_block_and_release + 32
+5   com.apple.AppIntents                  0x22859d608 __52-[LNProcessInstanceRegistryClient makeXPCConnection]_block_invoke.16 + 52
+4   com.apple.AppIntents                  0x22859d16c -[LNProcessInstanceRegistryClient makeXPCConnection] + 68
+3   com.apple.LinkServices                0x255d68e80 +[NSXPCConnection(ApplicationService) ln_applicationServiceWithError:] + 84
+2   libobjc.A.dylib                       0x181755f64 _objc_rootAllocWithZone + 52
+1   libsystem_malloc.dylib                0x1819cb72c _calloc + 88
+0   libsystem_malloc.dylib                0x1819e73ec _malloc_zone_calloc_instrumented_or_legacy + 132 
+====
+    288 (18.4K) << TOTAL >>
+
+      96 (6.12K) ROOT CYCLE: <NSXPCConnection 0xbc0c4c780> [192]  Protocol: LNDaemonApplicationInterface  Connection: <couldn't read name> [no process]
+         6 (800 bytes) _connection --> ROOT CYCLE: <xpc_connection_t 0xbc1120b40> [320]  <couldn't read name> [no process]
+            4 (432 bytes) ROOT CYCLE: <dispatch_mach_t 0xbc1511860> [160]
+               1 (64 bytes) ROOT CYCLE: <calloc in _dispatch_unote_create 0xbc102abc0> [64]
+               1 (160 bytes) <calloc in _dispatch_unote_create 0xbc104a800> [160]
+               1 (48 bytes) <malloc in _dispatch_mach_create 0x5f2024240> [48]
+            1 (48 bytes) ROOT CYCLE: <__NSMallocBlock__ 0xbc1027270> [48]  Foundation  __51-[NSXPCConnection initWithMachServiceName:options:]_block_invoke  0x183489804
+               __strong [capture] --> CYCLE BACK TO <NSXPCConnection 0xbc0c4c780> [192]  Protocol: LNDaemonApplicationInterface  Connection: <couldn't read name> [no process]
+         79 (4.42K) _remoteObjectInterface --> <NSXPCInterface 0xbc08cc050> [80]  Protocol: LNDaemonApplicationInterface
+            78 (4.34K) _methodInfo --> <CFDictionary 0xbc102f660> [80]
+               76 (4.08K) <CFDictionary (Value Storage) 0xbc0d3c900> [192]
+                  7 (432 bytes) <malloc in -[NSXPCInterface _locked_methodInfoForSelector:createIfNecessary:] 0xbc1017080> [64]
+                     3 (192 bytes) <NSArray 0xbc108eec0> [64]
+[Excerpt ends; complete original retained locally.]

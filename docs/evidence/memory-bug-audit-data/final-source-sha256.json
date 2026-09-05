@@ -1,0 +1,7 @@
+{
+  "app/dialogs.js": "c333298159c4c5c97d041e53d5c75b0875ffd0fd7f5dca7f10c4c3e9edb207fb",
+  "app/main.js": "60447b9b3bf9c45f33b8f1df3bd21e168ebdfb14333dd394d9982c691503d67a",
+  "app/runtime.js": "1ca5395b9613038c013e42e45400b4a542815fff1bd96eed708b41b1900bfd54",
+  "src-tauri/src/native.rs": "67b8a6d1c85afbcd8e3e77ed457fd0613ce907d3b4225025c3af4169bafc2b42",
+  "native/WindowActions.swift": "070b5f872e0bd083505a8eacf9fe158549b012e6c65eec66cbee76131bb66d13"
+}

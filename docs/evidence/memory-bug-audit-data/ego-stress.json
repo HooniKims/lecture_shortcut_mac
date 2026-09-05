@@ -1,0 +1,51 @@
+{
+  "scope": "Final frontend source; ego real browser with isolated IPC fixture.1000theme saves; separately verified1000focus/blur pairs with CDP focus emulation for background task page. Native tested separately.",
+  "before": {
+    "heap": {
+      "usedSize": 1523844,
+      "totalSize": 2359296,
+      "embedderHeapUsedSize": 841000,
+      "backingStorageSize": 230280
+    },
+    "dom": {
+      "documents": 1,
+      "nodes": 202,
+      "jsEventListeners": 17
+    }
+  },
+  "after": {
+    "heap": {
+      "usedSize": 1777652,
+      "totalSize": 2359296,
+      "embedderHeapUsedSize": 1172736,
+      "backingStorageSize": 230449
+    },
+    "dom": {
+      "documents": 1,
+      "nodes": 203,
+      "jsEventListeners": 17
+    }
+  },
+  "state": {
+    "done": true,
+    "theme": "paper",
+    "saves": 1000,
+    "dialogChildren": 0,
+    "listeners": {
+      "recorded-shortcut": 1,
+      "changed": 1,
+      "displays-changed": 1,
+      "notice": 1,
+      "action": 1,
+      "captured": 1
+    },
+    "recording": false
+  },
+  "focus": {
+    "pairs": 1000,
+    "writes": 2,
+    "peak": 1,
+    "recording": false,
+    "hasFocus": true
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "start": 3000,
+  "before": {
+    "heap": {
+      "usedSize": 1775320,
+      "totalSize": 2359296,
+      "embedderHeapUsedSize": 1316552,
+      "backingStorageSize": 230477
+    },
+    "dom": {
+      "documents": 1,
+      "nodes": 203,
+      "jsEventListeners": 17
+    }
+  },
+  "after": {
+    "heap": {
+      "usedSize": 1775380,
+      "totalSize": 2097152,
+      "embedderHeapUsedSize": 1322192,
+      "backingStorageSize": 230483
+    },
+    "dom": {
+      "documents": 1,
+      "nodes": 203,
+      "jsEventListeners": 17
+    }
+  },
+  "state": {
+    "saves": 4000,
+    "dialogChildren": 0,
+    "theme": "paper"
+  }
+}

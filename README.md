@@ -41,6 +41,7 @@
 pnpm install --frozen-lockfile
 pnpm dev
 pnpm check
+pnpm test
 pnpm build
 ```
 
@@ -54,6 +55,6 @@ pnpm build
 - `src-tauri/src/`: 전역 단축키, 설정 저장, 프리셋, 창 관리.
 - `native/`: Swift macOS 창·탭 제어. [지원 범위와 테스트](native/README.md).
 - `design/mockups/`: 이전 디자인 비교용 목업, 실제 앱과 분리되어 있습니다.
-- [합의 요구사항](docs/requirements.md), [검증 기록](docs/evidence/implementation-qa.md), [테마·자원 점검](docs/evidence/theme-resource-review.md).
+- [합의 요구사항](docs/requirements.md), [검증 기록](docs/evidence/implementation-qa.md), [테마·자원 점검](docs/evidence/theme-resource-review.md), [버그·메모리 재검증](docs/evidence/memory-bug-audit.md).
 
 UI는 요청에 따라 ego-browser에서 IPC 테스트 대역을 사용해 검증하고, 설치형 앱은 별도로 실제 Tauri 창과 시스템 단축키로 확인합니다. 브라우저 UI 검증을 OS 제어 검증으로 간주하지 않습니다.

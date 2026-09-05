@@ -1,0 +1,27 @@
+Process:         cue [56990]
+Path:            /Volumes/VOLUME/*/Cue Audit.app/Contents/MacOS/cue
+Load Address:    0x100cfc000
+Identifier:      dev.cue.audit
+Version:         0.1.0 (0.1.0)
+Code Type:       ARM64
+Platform:        macOS
+Parent Process:  codex [30530]
+Target Type:     live task
+
+Date/Time:       2026-09-05 12:26:02.123 +0900
+Launch Time:     2026-09-05 12:24:54.171 +0900
+OS Version:      macOS 26.6.2 (25G83)
+Report Version:  7
+Analysis Tool:   /usr/bin/leaks
+
+Physical footprint:         35.7M
+Physical footprint (peak):  35.8M
+Idle exit:                  untracked
+----
+
+Only showing unique leaks since .codex/memory-audit/isolated-baseline.memgraph.
+
+leaks Report Version: 4.0
+Process 56990: 59899 nodes malloced for 8844 KB
+Process 56990: 0 leaks for 0 total leaked bytes.
+

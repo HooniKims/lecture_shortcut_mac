@@ -1,0 +1,22 @@
+{
+  "runId": 1788578733378,
+  "cycles": 2000,
+  "nodes": [
+    116,
+    116,
+    116,
+    116
+  ],
+  "done": true,
+  "retainedFirstGeneration": 0,
+  "elapsedMs": 5972,
+  "newLeaks": 0,
+  "newLeakedBytes": 0,
+  "baselineObjects": 286,
+  "finalObjects": 286,
+  "baselineLeakedBytes": 14240,
+  "finalLeakedBytes": 14240,
+  "baselineFootprintMB": 30.0,
+  "finalFootprintMB": 35.7,
+  "shippingDmgSha256": "abfc07723745366cfc35500c6530512774201071410907453253682a48b7516d"
+}

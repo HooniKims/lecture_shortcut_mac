@@ -1,0 +1,31 @@
+npm warn Unknown env config "store-dir". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown user config "store-dir". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> cue@0.1.0 test
+> node --test tests/frontend-*.mjs && sh tests/native-process/run.sh
+
+✔ Given a hotkey field loses focus before its first bridge write arrives, when bridge delivery is reordered, then global shortcut capture ends disabled (3.267208ms)
+✔ Given rapid hotkey focus changes, when the first bridge write is still pending, then only the final state is sent after it (1.371083ms)
+✔ Given the initial recording write fails and blur has requested stop, when the bridge settles, then the latest stop write is still sent (0.626917ms)
+✔ Given a hotkey field is active, when the window blurs, then capture finishes disabled after the in-flight start write (0.540292ms)
+✔ Given the presenter panel changes window focus, when it has no hotkey field, then it does not change main-window capture state (0.469709ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 73.707167
+   Compiling native-process-regression v0.1.0 (/Volumes/exDisk/vibecoding project/31.lecture_shortcut/tests/native-process)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.24s
+normal: result=ok child_count=0 threads=baseline
+stderr: result=ok child_count=0 threads=baseline
+malformed: expected_error child_count=0 threads=baseline
+helperError: expected_error child_count=0 threads=baseline
+spawn_failure: expected_error child_count=0 threads=baseline
+descendant: result=ok elapsed_ms=51 child_count=0 threads=baseline
+timeout: result=timeout elapsed_ms=193 child_count=0 threads=baseline
+blockedInput: result=timeout elapsed_ms=224 child_count=0 threads=baseline
+parallel: admitted=2 rejected=1 child_count=0 threads=baseline
+busy_guard: overlap=rejected drop=released
