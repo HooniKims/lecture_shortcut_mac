@@ -4,28 +4,31 @@ npm warn Unknown user config "store-dir". This will stop working in the next maj
 > cue@0.1.0 test
 > node --test tests/frontend-*.mjs && sh tests/native-process/run.sh
 
-✔ Given a hotkey field loses focus before its first bridge write arrives, when bridge delivery is reordered, then global shortcut capture ends disabled (3.267208ms)
-✔ Given rapid hotkey focus changes, when the first bridge write is still pending, then only the final state is sent after it (1.371083ms)
-✔ Given the initial recording write fails and blur has requested stop, when the bridge settles, then the latest stop write is still sent (0.626917ms)
-✔ Given a hotkey field is active, when the window blurs, then capture finishes disabled after the in-flight start write (0.540292ms)
-✔ Given the presenter panel changes window focus, when it has no hotkey field, then it does not change main-window capture state (0.469709ms)
-ℹ tests 5
+✔ Given an application close button and a delayed native close event, when the button closes a dialog, then its children are removed immediately (3.33625ms)
+✔ Given a delayed close event from a previous form, when a new dialog is already open, then the old event preserves the new form (0.897084ms)
+✔ Given Escape cancels an open dialog, when native close notification is delayed, then cancellation prevents default close and clears immediately (0.767375ms)
+✔ Given a hotkey field loses focus before its first bridge write arrives, when bridge delivery is reordered, then global shortcut capture ends disabled (3.248833ms)
+✔ Given rapid hotkey focus changes, when the first bridge write is still pending, then only the final state is sent after it (1.252708ms)
+✔ Given the initial recording write fails and blur has requested stop, when the bridge settles, then the latest stop write is still sent (0.611375ms)
+✔ Given a hotkey field is active, when the window blurs, then capture finishes disabled after the in-flight start write (0.645916ms)
+✔ Given the presenter panel changes window focus, when it has no hotkey field, then it does not change main-window capture state (0.538333ms)
+ℹ tests 8
 ℹ suites 0
-ℹ pass 5
+ℹ pass 8
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 73.707167
-   Compiling native-process-regression v0.1.0 (/Volumes/exDisk/vibecoding project/31.lecture_shortcut/tests/native-process)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.24s
+ℹ duration_ms 65.082125
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.04s
+exit_probe: state=zombie ownership=retained reap=ok
 normal: result=ok child_count=0 threads=baseline
 stderr: result=ok child_count=0 threads=baseline
 malformed: expected_error child_count=0 threads=baseline
 helperError: expected_error child_count=0 threads=baseline
 spawn_failure: expected_error child_count=0 threads=baseline
-descendant: result=ok elapsed_ms=51 child_count=0 threads=baseline
-timeout: result=timeout elapsed_ms=193 child_count=0 threads=baseline
-blockedInput: result=timeout elapsed_ms=224 child_count=0 threads=baseline
+descendant: result=ok elapsed_ms=55 child_count=0 threads=baseline
+timeout: result=timeout elapsed_ms=186 child_count=0 threads=baseline
+blockedInput: result=timeout elapsed_ms=259 child_count=0 threads=baseline
 parallel: admitted=2 rejected=1 child_count=0 threads=baseline
 busy_guard: overlap=rejected drop=released

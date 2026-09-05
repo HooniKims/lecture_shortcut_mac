@@ -1,5 +1,5 @@
 {
-  "runId": 1788578733378,
+  "runId": 1788579921804,
   "cycles": 2000,
   "nodes": [
     116,
@@ -9,14 +9,16 @@
   ],
   "done": true,
   "retainedFirstGeneration": 0,
-  "elapsedMs": 5972,
+  "closedChildren": 0,
+  "reopenedIntact": true,
+  "elapsedMs": 18463,
   "newLeaks": 0,
   "newLeakedBytes": 0,
-  "baselineObjects": 286,
-  "finalObjects": 286,
-  "baselineLeakedBytes": 14240,
-  "finalLeakedBytes": 14240,
-  "baselineFootprintMB": 30.0,
-  "finalFootprintMB": 35.7,
-  "shippingDmgSha256": "abfc07723745366cfc35500c6530512774201071410907453253682a48b7516d"
+  "baselineObjects": 192,
+  "finalObjects": 192,
+  "baselineLeakedBytes": 9600,
+  "finalLeakedBytes": 9600,
+  "baselineFootprintMB": 32.3,
+  "finalFootprintMB": 37.8,
+  "shippingDmgSha256": "9ede73d00cb0188b5e0d75f60697dd1f5d2af870b8b1445ca0b9324f28ee19f1"
 }

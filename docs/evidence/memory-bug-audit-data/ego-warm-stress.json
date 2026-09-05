@@ -1,34 +1,41 @@
 {
-  "start": 3000,
   "before": {
     "heap": {
-      "usedSize": 1775320,
-      "totalSize": 2359296,
-      "embedderHeapUsedSize": 1316552,
-      "backingStorageSize": 230477
+      "usedSize": 1673936,
+      "totalSize": 2097152,
+      "embedderHeapUsedSize": 845872,
+      "backingStorageSize": 230419
     },
     "dom": {
       "documents": 1,
-      "nodes": 203,
-      "jsEventListeners": 17
+      "nodes": 202,
+      "jsEventListeners": 18
     }
   },
   "after": {
     "heap": {
-      "usedSize": 1775380,
+      "usedSize": 1673972,
       "totalSize": 2097152,
-      "embedderHeapUsedSize": 1322192,
-      "backingStorageSize": 230483
+      "embedderHeapUsedSize": 900792,
+      "backingStorageSize": 230419
     },
     "dom": {
       "documents": 1,
-      "nodes": 203,
-      "jsEventListeners": 17
+      "nodes": 202,
+      "jsEventListeners": 18
     }
   },
   "state": {
-    "saves": 4000,
+    "saves": 2000,
+    "theme": "studio",
     "dialogChildren": 0,
-    "theme": "paper"
+    "listeners": {
+      "recorded-shortcut": 1,
+      "changed": 1,
+      "displays-changed": 1,
+      "notice": 1,
+      "action": 1,
+      "captured": 1
+    }
   }
 }

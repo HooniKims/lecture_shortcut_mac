@@ -17,6 +17,16 @@
       if (i % 500 === 499) audit.nodes.push(document.querySelectorAll('*').length);
     }
     audit.retainedFirstGeneration = refs.filter(ref => ref.deref()).length;
+    await settingsDialog();
+    dialog.querySelector('[data-action="close-dialog"]').click();
+    audit.closedChildren = dialog.childElementCount;
+    if (dialog.open || audit.closedChildren) throw new Error('Closed dialog retained DOM');
+    showDialog('Audit reopen', '<p>Keep this form</p>', async () => {});
+    await new Promise(resolve => setTimeout(resolve, 100));
+    audit.reopenedIntact = dialog.open && dialog.querySelector('h2')?.textContent === 'Audit reopen';
+    if (!audit.reopenedIntact) throw new Error('Delayed close erased reopened form');
+    dialog.dispatchEvent(new Event('cancel', { cancelable: true }));
+    if (dialog.open || dialog.childElementCount) throw new Error('Cancelled dialog retained DOM');
     audit.elapsedMs = Date.now() - started;
     audit.done = true;
   })().catch(error => { audit.error = String(error); }).finally(() => {
