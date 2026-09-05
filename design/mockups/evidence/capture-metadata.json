@@ -1,0 +1,218 @@
+[
+  {
+    "name": "focus-desktop",
+    "png": true,
+    "width": 1440,
+    "height": 1411
+  },
+  {
+    "name": "focus-settings",
+    "png": true,
+    "width": 1440,
+    "height": 1411
+  },
+  {
+    "name": "focus-single-monitor",
+    "png": true,
+    "width": 1440,
+    "height": 1412
+  },
+  {
+    "name": "focus-standby",
+    "png": true,
+    "width": 1440,
+    "height": 1411
+  },
+  {
+    "name": "focus-add",
+    "png": true,
+    "width": 1440,
+    "height": 1411
+  },
+  {
+    "name": "focus-shortcut",
+    "png": true,
+    "width": 1440,
+    "height": 1471
+  },
+  {
+    "name": "focus-preset",
+    "png": true,
+    "width": 1440,
+    "height": 1471
+  },
+  {
+    "name": "focus-choice",
+    "png": true,
+    "width": 1440,
+    "height": 1471
+  },
+  {
+    "name": "focus-empty",
+    "png": true,
+    "width": 1440,
+    "height": 1296
+  },
+  {
+    "name": "focus-375",
+    "png": true,
+    "width": 375,
+    "height": 2357
+  },
+  {
+    "name": "focus-768",
+    "png": true,
+    "width": 768,
+    "height": 1913
+  },
+  {
+    "name": "focus-1280",
+    "png": true,
+    "width": 1280,
+    "height": 1590
+  },
+  {
+    "name": "paper-desktop",
+    "png": true,
+    "width": 1440,
+    "height": 1490
+  },
+  {
+    "name": "paper-settings",
+    "png": true,
+    "width": 1440,
+    "height": 1490
+  },
+  {
+    "name": "paper-single-monitor",
+    "png": true,
+    "width": 1440,
+    "height": 1491
+  },
+  {
+    "name": "paper-standby",
+    "png": true,
+    "width": 1440,
+    "height": 1490
+  },
+  {
+    "name": "paper-add",
+    "png": true,
+    "width": 1440,
+    "height": 1490
+  },
+  {
+    "name": "paper-shortcut",
+    "png": true,
+    "width": 1440,
+    "height": 1544
+  },
+  {
+    "name": "paper-preset",
+    "png": true,
+    "width": 1440,
+    "height": 1544
+  },
+  {
+    "name": "paper-choice",
+    "png": true,
+    "width": 1440,
+    "height": 1544
+  },
+  {
+    "name": "paper-empty",
+    "png": true,
+    "width": 1440,
+    "height": 1331
+  },
+  {
+    "name": "paper-375",
+    "png": true,
+    "width": 375,
+    "height": 2340
+  },
+  {
+    "name": "paper-768",
+    "png": true,
+    "width": 768,
+    "height": 2061
+  },
+  {
+    "name": "paper-1280",
+    "png": true,
+    "width": 1280,
+    "height": 1471
+  },
+  {
+    "name": "studio-desktop",
+    "png": true,
+    "width": 1440,
+    "height": 1326
+  },
+  {
+    "name": "studio-settings",
+    "png": true,
+    "width": 1440,
+    "height": 1326
+  },
+  {
+    "name": "studio-single-monitor",
+    "png": true,
+    "width": 1440,
+    "height": 1327
+  },
+  {
+    "name": "studio-standby",
+    "png": true,
+    "width": 1440,
+    "height": 1326
+  },
+  {
+    "name": "studio-add",
+    "png": true,
+    "width": 1440,
+    "height": 1326
+  },
+  {
+    "name": "studio-shortcut",
+    "png": true,
+    "width": 1440,
+    "height": 1470
+  },
+  {
+    "name": "studio-preset",
+    "png": true,
+    "width": 1440,
+    "height": 1470
+  },
+  {
+    "name": "studio-choice",
+    "png": true,
+    "width": 1440,
+    "height": 1470
+  },
+  {
+    "name": "studio-empty",
+    "png": true,
+    "width": 1440,
+    "height": 1339
+  },
+  {
+    "name": "studio-375",
+    "png": true,
+    "width": 375,
+    "height": 2445
+  },
+  {
+    "name": "studio-768",
+    "png": true,
+    "width": 768,
+    "height": 1852
+  },
+  {
+    "name": "studio-1280",
+    "png": true,
+    "width": 1280,
+    "height": 1533
+  }
+]

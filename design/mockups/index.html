@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="강의 화면 전환 앱 CUE의 세 가지 인터랙티브 디자인 목업. Focus, Paper, Studio를 비교해 보세요.">
+  <title>CUE — 세 가지 디자인 방향</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23242726'/%3E%3Cpath d='m12 8 12 8-12 8z' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="gallery.css">
+  <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="variants.css">
+  <script src="icons.js" defer></script>
+  <script src="render.js" defer></script>
+  <script src="interactions.js" defer></script>
+</head>
+<body data-theme="studio">
+  <header class="gallery-header">
+    <a class="gallery-brand" href="#studio" aria-label="CUE 디자인 비교 첫 화면"><span class="brand-mark">c<span>u</span>e</span><span class="brand-separator"></span><span>DESIGN EXPLORATION</span></a>
+    <span class="prototype-label"><i></i> C안 선택 완료 <span class="version">01</span></span>
+  </header>
+  <main class="gallery-main">
+    <section class="introduction" aria-labelledby="page-title">
+      <div><p class="eyebrow">강의의 흐름을 이어주는 작은 도구</p><h1 id="page-title">같은 기능, 세 가지 다른 감각.</h1></div>
+      <p class="intro-note">앱·창·탭을 한 번의 단축키로.<br>나에게 맞는 화면을 골라보세요.</p>
+    </section>
+    <nav class="direction-tabs" aria-label="디자인 방향 선택">
+      <button class="direction-tab" data-direction="focus" aria-pressed="true"><span class="tab-letter">A</span><span><strong>Focus</strong><small>Raycast에서 영감</small></span><span class="tab-description">정교하고 빠르게</span></button>
+      <button class="direction-tab" data-direction="paper" aria-pressed="false"><span class="tab-letter">B</span><span><strong>Paper</strong><small>Things 3에서 영감</small></span><span class="tab-description">차분하고 명료하게</span></button>
+      <button class="direction-tab" data-direction="studio" aria-pressed="false"><span class="tab-letter">C</span><span><strong>Studio</strong><small>Stream Deck에서 영감</small></span><span class="tab-description">직관적인 제어판</span></button>
+    </nav>
+    <section class="workbench" aria-label="설정 화면과 발표자 패널 목업">
+      <div class="workbench-label"><span><b id="direction-label">A / FOCUS</b><span class="label-divider">—</span><span id="direction-caption">필요한 정보만, 정확한 자리에.</span></span><span class="demo-note">예시 데이터 · 실제 앱은 제어하지 않습니다</span></div>
+      <div class="preview-grid">
+        <section class="settings-preview"><div class="surface-caption"><span>01</span> 설정 화면</div><div id="app-root" class="app-window"></div></section>
+        <section class="presenter-preview"><div class="surface-caption"><span>02</span> 발표자 패널 <span class="drag-caption">헤더를 잡고 움직여보세요</span></div><div id="panel-root"></div></section>
+      </div>
+      <div class="workbench-footer"><span id="design-note">짧은 목록과 입체적인 키캡. 좁은 공간에서도 빠르게 읽히는 화면.</span><button id="reset-demo" class="reset-button">목업 초기화 <span aria-hidden="true">↺</span></button></div>
+    </section>
+    <section class="design-summary" aria-label="선택한 디자인 설명"><div><span class="eyebrow">DESIGN NOTES</span><h2 id="summary-title">작게 띄워도, 확실하게.</h2></div><div id="summary-points"></div><button id="choose-design" class="choose-button">A · Focus 선택하기 <span aria-hidden="true">↗</span></button></section>
+    <footer class="gallery-footer"><span>CUE는 가칭입니다. 선택한 방향으로 맥·윈도우의 디자인을 통일합니다.</span><a id="reference-link" href="https://www.raycast.com/press" target="_blank" rel="noreferrer">상용 앱 레퍼런스 보기 ↗</a></footer>
+  </main>
+  <dialog id="demo-dialog" aria-labelledby="dialog-title"><div id="dialog-content"></div></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

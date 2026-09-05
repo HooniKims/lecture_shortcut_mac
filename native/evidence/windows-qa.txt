@@ -1,0 +1,8 @@
+send {"ok": true, "outcome": "shown", "target": {"app": "텍스트 편집기", "bundleId": "com.apple.TextEdit", "id": "com.apple.TextEdit:window:cg:21987", "kind": "window", "pid": 14026, "title": "CUE Native Window QA.txt", "windowId": "cg:21987"}}
+toggle {"ok": true, "outcome": "minimized", "target": {"app": "텍스트 편집기", "bundleId": "com.apple.TextEdit", "id": "com.apple.TextEdit:window:cg:21987", "kind": "window", "pid": 14026, "title": "CUE Native Window QA.txt", "windowId": "cg:21987"}}
+toggle {"ok": true, "outcome": "shown", "target": {"app": "텍스트 편집기", "bundleId": "com.apple.TextEdit", "id": "com.apple.TextEdit:window:cg:21987", "kind": "window", "pid": 14026, "title": "CUE Native Window QA.txt", "windowId": "cg:21987"}}
+capture {"ok": true, "target": {"app": "텍스트 편집기", "bundleId": "com.apple.TextEdit", "id": "com.apple.TextEdit:window:cg:21987", "kind": "window", "pid": 14026, "title": "CUE Native Window QA.txt", "windowId": "cg:21987"}}
+prepare {"ok": true, "outcome": "minimized", "target": {"app": "텍스트 편집기", "bundleId": "com.apple.TextEdit", "id": "com.apple.TextEdit:window:cg:21987", "kind": "window", "pid": 14026, "title": "CUE Native Window QA.txt", "windowId": "cg:21987"}}
+prepare {"ok": true, "outcome": "prepared", "target": {"app": "텍스트 편집기", "bundleId": "com.apple.TextEdit", "id": "com.apple.TextEdit:window:cg:21987", "kind": "window", "pid": 14026, "title": "CUE Native Window QA.txt", "windowId": "cg:21987"}}
+send {"error": "등록한 창이 닫혔습니다. 텍스트 편집기을 연 뒤 창을 다시 등록하세요. 문서의 경로는 자동으로 복원할 수 없습니다.", "ok": false}
+PASS generic send, minimize, restore, capture, prepare, closed-window error

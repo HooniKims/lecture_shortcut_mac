@@ -1,0 +1,16 @@
+node_modules/
+src-tauri/target/
+src-tauri/gen/
+src-tauri/binaries/cue-native-*
+.DS_Store
+
+.codegraph/
+.codex/
+design/mockups/evidence/*.png
+design/references/*.png
+docs/evidence/*.png
+native/__pycache__/
+src-tauri/icons/android/
+src-tauri/icons/ios/
+src-tauri/icons/Square*
+src-tauri/icons/StoreLogo.png

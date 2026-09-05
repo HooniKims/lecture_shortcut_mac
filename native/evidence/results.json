@@ -1,0 +1,43 @@
+{
+  "chrome": {
+    "pass": true,
+    "evidence": "native/evidence/chrome-qa.txt"
+  },
+  "safari": {
+    "pass": true,
+    "evidence": "native/evidence/safari-qa.txt"
+  },
+  "windows": {
+    "pass": true,
+    "evidence": "native/evidence/windows-qa.txt"
+  },
+  "permissions": {
+    "ok": true,
+    "permissions": {
+      "accessibility": true
+    }
+  },
+  "displays": {
+    "displays": [
+      {
+        "height": 866,
+        "id": "25",
+        "name": "화면 공유 가상 디스플레이",
+        "primary": true,
+        "width": 1680,
+        "x": 0,
+        "y": 30
+      }
+    ],
+    "ok": true
+  },
+  "invalid": {
+    "error": "지원하지 않는 명령입니다: invalid",
+    "ok": false
+  },
+  "help": "Cue native helper: send one JSON request on stdin. Ops: snapshot, displays, permissions, requestPermissions, capture, toggle, prepare, send.",
+  "binarySha256": "2eaf4e15bcc2a2f8fc0ad32fd287e1d3d2cb38dc14e0b9aacb8f86feb9a4d2ac",
+  "time": "2026-09-05T02:23:26.663069+00:00",
+  "physicalDisplaysTested": 1,
+  "followup": "Root reran Chrome, Safari and TextEdit manual integration drivers after Safari existing-window exclusion fix; all exited 0."
+}

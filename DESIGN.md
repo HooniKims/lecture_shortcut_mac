@@ -1,0 +1,53 @@
+# CUE design exploration
+
+## 0. Research Log
+- User compared the three interactive mockups and selected C / Studio. This is the confirmed design for implementation.
+- Official references viewed: Raycast press kit (https://www.raycast.com/press), Things features (https://culturedcode.com/things/features/), Stream Deck software (https://www.elgato.com/us/en/s/stream-deck-app). Images are archived in design/references.
+- Embedded references: Raycast design system and minimalist execution guide. The explicit three-direction brief takes precedence over selecting one direction now.
+- Image generation not used: these are interactive HTML mockups with real Korean text, not raster images of an interface.
+
+## 1. Atmosphere & Identity
+Working name CUE. A lecture screen switcher. The same six lecture targets appear in all variants for a fair comparison.
+- A Focus / Raycast: graphite, compact command rows, tactile shortcut keycaps, a small coral accent, subtle inset lighting. Three-column settings and a dense dark presenter list.
+- B Paper / Things: warm-white workspace, blue selection, generous typography and spacing. Two-column settings, inline selection details, bright presenter checklist.
+- C Studio / Stream Deck: charcoal control surface, raised square pads, teal active outlines. Tile-based settings and two-column presenter pads.
+C / Studio is selected. A / Focus and B / Paper are retained only as comparison references. These are references for composition and craft, not pixel-identical clones or final branding.
+
+## 2. Color
+Shared gallery: canvas #f4f3f0, foreground #242726, secondary #6d716e, border #dedfda, paper #ffffff.
+A: surface #202125, sidebar #1b1c20, elevated #28292e, text #f3f3f5, secondary #a2a3ad, border #393a41, accent #ff806f, accent foreground #20100e, selected #34353d.
+B: surface #ffffff, sidebar #f5f6f8, elevated #fafbfc, text #282d36, secondary #727883, border #e5e7eb, accent #2874dc, accent foreground #ffffff, selected #eaf2ff.
+C: surface #191c21, sidebar #15181d, elevated #242930, text #f1f4f6, secondary #a0aab6, border #363d46, accent #73e2c2, accent foreground #11251f, selected #233e37.
+Status: dark success #79ddb0, light success #237a54; warning #f3c676 / #956315; error #c84646. Traffic-light decor #ff6058, #ffbd2e, #28ca42. App identities: presentation #dc6848, browser #4c8be8, video #d64a57, code #3187c9, document #387bdd, note #555c68.
+
+## 3. Typography
+Use the system stack -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; this is an intentional desktop-native reference choice. Monospace: ui-monospace, SFMono-Regular, Menlo, monospace.
+Scale: 11, 12, 13, 14, 16, 18, 22, 28, 36 px. Metadata at 11–12; functional labels at 13–14; titles 22–28; gallery heading 36. Korean word-break: keep-all; overflow-wrap: anywhere only for unbroken data strings.
+
+## 4. Spacing & Layout
+Base 4px; spacing scale 4/8/12/16/20/24/32/40/48/64. Window chrome 44px, primary rows 56px (A), 62px (B), pads 130px (C). Radius scale 4/6/8/12/16/20.
+Gallery max-width 1440px. Desktop workbench places settings and presenter panel side by side at 1100px+. Below that, panel stacks below settings. Below 700px, sidebar becomes a horizontal preset strip, inspector stacks, tile grid uses two columns. Page scrolls naturally; no hidden primary content and no page overflow at 375px.
+
+## 5. Components
+- Gallery direction tabs: three real buttons, aria-pressed, keyboard reachable; show reference name, alphabet marker and active underline.
+- Window frame: decorative macOS dots (not fake controls), product title and panel toggle. Border plus soft outer shadow and inset highlight.
+- Preset navigation: selectable buttons with count; selected background and semantic aria-pressed.
+- Target row/pad: icon, title, application, shortcut, live status; select for details. Presenter target button toggles the simulated active/minimized state.
+- Keycap: mono text, subtle vertical bevel; used in rows, inspector, presenter panel.
+- Inspector: selected target details, name, shortcut, browser tab move option and preview action.
+- Presenter panel: draggable header, close button, mode indicator, target buttons, show/hide control in main toolbar. Dragging is only within this browser mockup.
+- Settings dialog: monitor count simulation, display choice, standby toggle disabled on a single screen, restore setting.
+- Add dialog: example app/window/tab selector and add action. Registration name defaults to the source window title (tab title for tabs, app name if no window title). Editable at registration and afterward; custom text survives changing the picker. Empty name uses the source title. Source title and alias are separate fields. Rename updates both the main list and presenter panel. Clearly demonstration data.
+- Toast: aria-live feedback for prototype operations; no misleading native operation claims.
+All controls have visible keyboard focus, hover, pressed, and disabled treatments. Empty search has a clear message.
+
+## 6. Motion & Interaction
+120ms opacity and transform feedback only. No ambient animation. Reduced motion disables transitions. Drag uses pointer capture and transform, constrained inside the viewport. Esc closes dialogs.
+Mock interactions never control real apps. The shell labels the artifact as an interactive design mockup.
+
+## 7. Depth & Surface
+A/C: subtle white inset top rim, dark outer border, layered key/pad bevels. Floating window shadow 0 24px 60px rgba(25,30,35,.18), plus 0 3px 10px rgba(25,30,35,.08). B: clean paper surface with softer shadow. Gallery backgrounds are neutral atmospheric stages; accent remains in meaningful controls.
+
+## 8. Accessibility Constraints & Accepted Debt
+Visible focus ring, named inputs/buttons, aria-pressed for tabs and toggles, native dialog, no one-character CJK orphaning, reduced motion. At small sizes content reflows.
+Accepted scope: explicitly requested throwaway design mockups; native switching, OS shortcuts, browser integration, real monitor discovery and installation are outside this artifact. C / Studio has been selected; native application implementation remains separate.
