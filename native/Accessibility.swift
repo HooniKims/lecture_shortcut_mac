@@ -49,7 +49,9 @@ func allDisplays() -> [Display] {
     return screens.enumerated().map { index, screen in
         let f = screen.visibleFrame
         let number = screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber
-        return Display(id: number?.stringValue ?? String(index), name: screen.localizedName, x: f.minX, y: top - f.maxY, width: f.width, height: f.height, primary: index == 0)
+        let localizedName = screen.localizedName
+        let name = localizedName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "모니터 \(index + 1)" : localizedName
+        return Display(id: number?.stringValue ?? String(index), name: name, x: f.minX, y: top - f.maxY, width: f.width, height: f.height, primary: index == 0)
     }
 }
 func selectedDisplay(_ id: String?) throws -> Display? {
