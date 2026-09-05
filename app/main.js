@@ -90,7 +90,7 @@ on(document, 'click', async event => {
       case 'panel': await invoke('toggle_panel'); break;
       case 'preset': presetDialog(); break;
       case 'all': search = ''; render(); break;
-      case 'close-dialog': document.getElementById('dialog').close(); break;
+      case 'close-dialog': closeDialog(); break;
     }
   } catch (error) { notice(error); }
 });

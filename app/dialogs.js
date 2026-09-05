@@ -10,13 +10,17 @@ function setShortcutRecording(recording) {
     if (requestedRecording !== nextRecording) setShortcutRecording(requestedRecording);
   });
 }
+function closeDialog() {
+  dialog.close();
+  dialog.replaceChildren();
+}
 function showDialog(title, content, submit) {
   dialog.innerHTML = `<form id="dialog-form"><header class="dialog-header"><h2 id="dialog-title">${title}</h2><button type="button" class="icon-button" data-action="close-dialog" aria-label="닫기">${icon('close')}</button></header>${content}<p id="dialog-error" class="form-error" role="alert"></p></form>`;
   if (!dialog.open) dialog.showModal();
   const form = document.getElementById('dialog-form');
   form.addEventListener('submit', async event => {
     event.preventDefault(); const button = event.submitter; if (button) button.disabled = true;
-    try { await submit(new FormData(event.target)); if (document.getElementById('dialog-form') === form) dialog.close(); }
+    try { await submit(new FormData(event.target)); if (document.getElementById('dialog-form') === form) closeDialog(); }
     catch (error) { form.querySelector('.form-error').textContent = String(error); }
     finally { if (button) button.disabled = false; }
   });
@@ -130,4 +134,5 @@ on(window, "blur", () => setShortcutRecording(false));
 
 on(window, "focus", () => setShortcutRecording(document.activeElement?.matches("[data-hotkey]") || false));
 
+on(dialog, "cancel", event => { event.preventDefault(); closeDialog(); });
 on(dialog, "close", () => { if (!dialog.open) dialog.replaceChildren(); });
