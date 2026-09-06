@@ -60,7 +60,7 @@ test('Given shortcut tokens, when rendered as keycaps, then modifiers and naviga
   assert.equal(harness.run("prettyKey('CommandOrControl+Control+Alt+Shift+ArrowLeft')"), '⌘ ⌃ ⌥ ⇧ ←');
   assert.equal(harness.run("prettyKey('Enter+Space+ArrowRight+ArrowUp+ArrowDown')"), '↩ ␣ → ↑ ↓');
   assert.equal(harness.run("prettyKey('Super+KeyP+Digit7+F12')"), '⌘ P 7 F12');
-  assert.match(harness.run("keycap('Control+ArrowUp')"), /<kbd>⌃<\/kbd><kbd>↑<\/kbd>/);
+  assert.match(harness.run("keycap('Control+ArrowUp')"), /<kbd class="key-modifier">⌃<\/kbd><span class="key-separator">\+<\/span><kbd class="key-trigger">↑<\/kbd>/);
 });
 
 test('Given an editable shortcut, when its shared field renders, then its canonical form value and single input remain accessible', async () => {
@@ -70,17 +70,17 @@ test('Given an editable shortcut, when its shared field renders, then its canoni
   assert.match(html, /name="shortcut"[^>]*value="CommandOrControl\+Shift\+1"/);
   assert.match(html, /aria-describedby="shortcut-help"/);
   assert.match(html, /class="shortcut-preview" aria-hidden="true"/);
-  assert.match(html, /<kbd>⌘<\/kbd><kbd>⇧<\/kbd><kbd>1<\/kbd>/);
+  assert.match(html, /<kbd class="key-modifier">⌘<\/kbd><span class="key-separator">\+<\/span><kbd class="key-modifier">⇧<\/kbd><span class="key-separator">\+<\/span><kbd class="key-trigger">1<\/kbd>/);
   assert.doesNotMatch(html, /readonly|tabindex|type="hidden"/);
   assert.match(harness.run("shortcutField('shortcut', '')"), /원하는 키 조합 누르기/);
-  assert.match(harness.run(`shortcutField('shortcut', 'Alt+<')`), /<kbd>&lt;<\/kbd>/);
+  assert.match(harness.run(`shortcutField('shortcut', 'Alt+<')`), /<kbd class="key-trigger">&lt;<\/kbd>/);
 });
 
 test('Given an active shortcut field, when a chord is captured, then both canonical value and keycaps update while Tab and Escape stay available', async () => {
   const harness = await createHarness(), field = harness.field();
   const event = harness.keydown(field);
   assert.equal(field.value, 'CommandOrControl+Alt+Shift+ArrowLeft');
-  assert.match(field.nextElementSibling.innerHTML, /<kbd>⌘<\/kbd><kbd>⌥<\/kbd><kbd>⇧<\/kbd><kbd>←<\/kbd>/);
+  assert.match(field.nextElementSibling.innerHTML, /<kbd class="key-modifier">⌘<\/kbd><span class="key-separator">\+<\/span><kbd class="key-modifier">⌥<\/kbd><span class="key-separator">\+<\/span><kbd class="key-modifier">⇧<\/kbd><span class="key-separator">\+<\/span><kbd class="key-trigger">←<\/kbd>/);
   assert.equal(event.prevented, true);
   assert.equal(event.stopped, true);
   for (const key of ['Tab', 'Escape']) {
@@ -93,9 +93,9 @@ test('Given an active shortcut field, when a native recording or input event cha
   const harness = await createHarness(), field = harness.field();
   harness.recorded('Super+Control+Enter');
   assert.equal(field.value, 'Super+Control+Enter');
-  assert.match(field.nextElementSibling.innerHTML, /<kbd>⌘<\/kbd><kbd>⌃<\/kbd><kbd>↩<\/kbd>/);
+  assert.match(field.nextElementSibling.innerHTML, /<kbd class="key-modifier">⌘<\/kbd><span class="key-separator">\+<\/span><kbd class="key-modifier">⌃<\/kbd><span class="key-separator">\+<\/span><kbd class="key-trigger">↩<\/kbd>/);
   field.value = 'Alt+Space'; harness.input(field);
-  assert.match(field.nextElementSibling.innerHTML, /<kbd>⌥<\/kbd><kbd>␣<\/kbd>/);
+  assert.match(field.nextElementSibling.innerHTML, /<kbd class="key-modifier">⌥<\/kbd><span class="key-separator">\+<\/span><kbd class="key-trigger">␣<\/kbd>/);
   field.value = ''; harness.input(field);
   assert.match(field.nextElementSibling.innerHTML, /원하는 키 조합 누르기/);
 });

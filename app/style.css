@@ -69,8 +69,10 @@ strong{font-weight:600}
 .target-symbol.tab{color:var(--tab-ink)}
 .target-symbol.window{color:var(--window-ink)}
 .pad>.key-combo{position:absolute;top:10px;right:10px}
-.key-combo{display:inline-flex;gap:3px;white-space:nowrap}
-kbd{font:11px ui-monospace,SFMono-Regular,Menlo,monospace;min-width:18px;padding:2px 4px;background:var(--key-bg);border:1px solid var(--key-border);border-bottom-width:2px;border-radius:4px;text-align:center;color:var(--key-ink)}
+.key-combo{display:inline-flex;align-items:center;gap:2px;white-space:nowrap}
+.key-separator{font:500 10px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--secondary);flex-shrink:0}
+kbd.key-trigger{background:var(--key-trigger-bg);border-color:var(--key-trigger-border);color:var(--key-trigger-ink);font-weight:700}
+kbd{font:11px ui-monospace,SFMono-Regular,Menlo,monospace;min-width:18px;padding:2px 4px;background:var(--key-bg);border:1px solid var(--key-border);border-bottom-width:2px;border-radius:4px;text-align:center;color:var(--key-ink);box-shadow:var(--key-shadow);flex-shrink:0}
 .pad kbd{font-size:11px;padding:1px 3px;min-width:16px}
 .pad-status{position:absolute;top:12px;left:10px;color:var(--accent);font-size:8px}
 .hint{font-size:10px;color:var(--secondary);margin:20px 0}
@@ -90,7 +92,9 @@ form label+label{margin-top:18px}
 .shortcut-field .shortcut-input{display:block;height:44px;margin:0;color:transparent;caret-color:transparent;font-size:13px;cursor:pointer}
 .shortcut-field .shortcut-input::selection{color:transparent;background:transparent}
 .shortcut-preview{position:absolute;inset:0;display:flex;align-items:center;gap:8px;padding:0 12px;pointer-events:none;overflow:hidden}
-.shortcut-preview .key-combo{gap:4px;min-width:0}
+.shortcut-preview .key-combo{gap:2px;flex-shrink:0}
+.shortcut-preview:has(kbd:nth-of-type(5))>.icon{display:none}
+.shortcut-preview .key-separator{font-size:11px}
 .shortcut-preview kbd{font-size:13px;min-width:24px;padding:2px 4px}
 .shortcut-preview>.icon{margin-left:auto;width:16px;height:16px;color:var(--secondary)}
 .shortcut-field:focus-within .shortcut-preview>.icon{color:var(--accent)}
@@ -163,7 +167,8 @@ dialog::backdrop{background:var(--backdrop);backdrop-filter:blur(3px)}
 .panel-footer{font-size:9px;text-align:center;padding:14px;color:var(--secondary)}
 .panel-send{padding:0 14px}
 .panel-send .button{font-size:11px}
-.panel-send kbd{font-size:9px;background:transparent;color:inherit;border-color:var(--accent-ink)}
+.panel-send kbd{font-size:9px}
+.panel-send .key-separator{color:inherit}
 #toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,12px);opacity:0;pointer-events:none;z-index:20;background:var(--toast-bg);color:var(--toast-ink);box-shadow:0 8px 30px var(--toast-shadow);padding:13px 18px;border-radius:9px;max-width:calc(100vw - 32px);width:max-content;font-size:12px;line-height:1.6;transition:opacity .15s,transform .15s}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 

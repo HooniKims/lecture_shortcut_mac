@@ -22,5 +22,5 @@ const glyphs = {
 };
 function icon(name, className = '') { return `<svg class="icon ${className}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${glyphs[name] || glyphs.grid}</svg>`; }
 function appIcon(item) { return `<span class="app-icon app-${item.icon}">${icon(item.icon)}</span>`; }
-function keys(value) { return `<span class="key-combo">${value.split(' ').map(key => `<kbd>${escapeText(key)}</kbd>`).join('')}</span>`; }
+function keys(value) { return `<span class="key-combo">${value.split(' ').map(key => `<kbd class="${['⌘', '⌃', '⌥', '⇧'].includes(key) ? 'key-modifier' : 'key-trigger'}">${escapeText(key)}</kbd>`).join('<span class="key-separator">+</span>')}</span>`; }
 function escapeText(value) { return String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char])); }
