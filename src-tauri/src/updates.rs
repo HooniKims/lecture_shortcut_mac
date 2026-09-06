@@ -174,7 +174,14 @@ pub async fn install_update(app: AppHandle, window: WebviewWindow) -> Result<(),
         .await;
     let bytes = match bytes {
         Ok(bytes) => bytes,
-        Err(_) => return publish(&app, Status::Error { message: "다운로드 또는 파일 서명 검증에 실패했습니다. 기존 앱은 변경하지 않았습니다. 다시 확인해 주세요.".into() }),
+        Err(_) => return publish(
+            &app,
+            Status::Error {
+                message:
+                    "다운로드 또는 파일 서명 검증에 실패했습니다. 기존 앱은 변경하지 않았습니다."
+                        .into(),
+            },
+        ),
     };
     publish(
         &app,
