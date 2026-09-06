@@ -107,8 +107,9 @@ pub fn record_shortcut(
     recording: bool,
 ) -> Result<(), String> {
     let store = app.state::<Store>();
+    let focused = recording && window.is_focused().map_err(|e| e.to_string())?;
     let mut owner = store.recording.lock().map_err(|e| e.to_string())?;
-    if recording && window.is_focused().map_err(|e| e.to_string())? {
+    if focused {
         *owner = Some(window.label().into());
     } else if !recording && owner.as_deref() == Some(window.label()) {
         *owner = None;

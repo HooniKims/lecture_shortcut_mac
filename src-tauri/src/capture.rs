@@ -156,9 +156,22 @@ pub fn finish(app: &AppHandle, id: Option<u64>, input: Option<Registration>) -> 
             .target
             .as_ref()
             .ok_or("대상을 읽지 못해 등록할 수 없습니다.")?;
-        let mut current = store.config.lock().map_err(|e| e.to_string())?;
-        let next = registration_config(&current, target, input)?;
-        commands::commit_config(app, &mut current, next)?;
+        let target = target.clone();
+        let handle = app.clone();
+        let (sender, receiver) = std::sync::mpsc::sync_channel(1);
+        // Shortcut registration runs on the UI thread. Acquire config there too,
+        // so a queued get_state cannot block that thread while we wait for it.
+        app.run_on_main_thread(move || {
+            let result = (|| {
+                let store = handle.state::<Store>();
+                let mut current = store.config.lock().map_err(|e| e.to_string())?;
+                let next = registration_config(&current, &target, input)?;
+                commands::commit_config(&handle, &mut current, next)
+            })();
+            let _ = sender.send(result);
+        })
+        .map_err(|e| e.to_string())?;
+        receiver.recv().map_err(|e| e.to_string())??;
     }
     let window = app
         .get_webview_window("capture")
