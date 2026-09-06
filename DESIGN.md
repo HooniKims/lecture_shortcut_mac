@@ -72,3 +72,5 @@ A dedicated 520×620 native window uses the current Studio/Paper tokens, 24px pa
 ## 13. macOS menu bar
 
 Use a dedicated transparent, monochrome Cue monogram for the macOS status item. The 18-point canvas has a 2-point rounded stroke and a short lower-right cue stroke; omit the app tile background. Keep an editable SVG and a 36-pixel PNG for Retina rendering. Mark the native image as a template so macOS supplies contrast and selected-state colors independently of the app theme. Reuse the existing menu, tooltip and actions.
+
+The menu bar includes “업데이트 확인…” between the presenter panel and quit actions. It restores the main window and opens the existing update dialog directly. Repeated clicks preserve checking/download/install progress and never start an installation. Existing settings drafts remain behind the update dialog.

@@ -50,8 +50,14 @@ function renderUpdateStatus() {
   }
 }
 async function checkUpdate() {
+  updateState.status = { phase: 'checking' }; renderUpdateStatus();
   try { await invoke('check_update', { automatic: false }); }
   catch (error) { updateState.status = { phase: 'error', message: String(error) }; renderUpdateStatus(); }
+}
+async function openUpdateDialog() {
+  updateDialog.innerHTML = updateDialogContent();
+  if (!updateDialog.open) updateDialog.showModal();
+  if (!updateBusy() && !['available', 'ready'].includes(updateState.status.phase)) await checkUpdate();
 }
 on(document, 'click', async event => {
   const action = event.target.closest('[data-update]')?.dataset.update;
@@ -59,8 +65,7 @@ on(document, 'click', async event => {
   try {
     switch (action) {
       case 'open':
-        updateDialog.innerHTML = updateDialogContent(); updateDialog.showModal();
-        if (!updateBusy() && !['available', 'ready'].includes(updateState.status.phase)) await checkUpdate();
+        await openUpdateDialog();
         break;
       case 'close': updateDialog.close(); updateDialog.replaceChildren(); break;
       case 'check': if (!updateBusy()) await checkUpdate(); break;
@@ -76,6 +81,7 @@ on(updateDialog, 'cancel', () => { updateDialog.replaceChildren(); });
 async function startUpdates() {
   await subscribe('update-status', event => { updateState.status = event.payload; renderUpdateStatus(); });
   updateState = await invoke('update_status'); renderUpdateStatus();
+  await subscribe('open-updates', () => openUpdateDialog());
   // Only the main window checks, once at boot; the backend enforces the saved daily limit.
   void invoke('check_update', { automatic: true }).catch(error => {
     updateState.status = { phase: 'error', message: String(error) }; renderUpdateStatus();

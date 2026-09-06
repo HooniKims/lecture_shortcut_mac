@@ -76,8 +76,9 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             }
             let show = MenuItem::with_id(app, "show", "Cue 열기", true, None::<&str>)?;
             let panel = MenuItem::with_id(app, "panel", "발표자 패널", true, None::<&str>)?;
+            let updates = MenuItem::with_id(app, "updates", "업데이트 확인…", true, None::<&str>)?;
             let quit = MenuItem::with_id(app, "quit", "Cue 종료", true, None::<&str>)?;
-            let menu = Menu::with_items(app, &[&show, &panel, &quit])?;
+            let menu = Menu::with_items(app, &[&show, &panel, &updates, &quit])?;
             let mut tray = TrayIconBuilder::new()
                 .menu(&menu)
                 .tooltip("Cue · 강의 화면 전환");
@@ -97,6 +98,14 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 }
                 "panel" => {
                     let _ = actions::panel(app);
+                }
+                "updates" => {
+                    if let Err(error) = actions::show_main(app).and_then(|()| {
+                        app.emit_to("main", "open-updates", ())
+                            .map_err(|e| e.to_string())
+                    }) {
+                        let _ = app.emit_to("main", "notice", error);
+                    }
                 }
                 "quit" => app.exit(0),
                 _ => (),
