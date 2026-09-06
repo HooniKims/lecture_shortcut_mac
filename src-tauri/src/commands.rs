@@ -22,9 +22,14 @@ pub fn get_state(app: AppHandle) -> Result<Value, String> {
 pub fn save_config(app: AppHandle, config: Config) -> Result<(), String> {
     let store = app.state::<Store>();
     let mut current = store.config.lock().map_err(|e| e.to_string())?;
-    shortcuts::replace(&app, &current, &config)?;
+    commit_config(&app, &mut current, config)
+}
+
+pub fn commit_config(app: &AppHandle, current: &mut Config, config: Config) -> Result<(), String> {
+    let store = app.state::<Store>();
+    shortcuts::replace(app, current, &config)?;
     if let Err(e) = store.persist(&config) {
-        if let Err(rollback) = shortcuts::replace(&app, &config, &current) {
+        if let Err(rollback) = shortcuts::replace(app, &config, current) {
             return Err(format!(
                 "{e}. 이전 단축키 복구 실패: {rollback}. Cue를 재시작해 주세요."
             ));
@@ -32,7 +37,7 @@ pub fn save_config(app: AppHandle, config: Config) -> Result<(), String> {
         return Err(e);
     }
     if current.settings.theme != config.settings.theme
-        && let Err(error) = actions::apply_theme(&app, config.settings.theme)
+        && let Err(error) = actions::apply_theme(app, config.settings.theme)
     {
         let _ = app.emit("notice", error);
     }
@@ -96,8 +101,17 @@ pub async fn refresh_displays(app: AppHandle) -> Result<NativeReply, String> {
 }
 
 #[tauri::command]
-pub fn record_shortcut(app: AppHandle, recording: bool) {
-    app.state::<Store>()
-        .recording
-        .store(recording, std::sync::atomic::Ordering::SeqCst);
+pub fn record_shortcut(
+    window: tauri::WebviewWindow,
+    app: AppHandle,
+    recording: bool,
+) -> Result<(), String> {
+    let store = app.state::<Store>();
+    let mut owner = store.recording.lock().map_err(|e| e.to_string())?;
+    if recording && window.is_focused().map_err(|e| e.to_string())? {
+        *owner = Some(window.label().into());
+    } else if !recording && owner.as_deref() == Some(window.label()) {
+        *owner = None;
+    }
+    Ok(())
 }

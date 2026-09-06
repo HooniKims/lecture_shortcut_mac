@@ -101,12 +101,7 @@ fn perform_inner(app: &AppHandle, id: &str, send: bool) -> Result<NativeReply, S
 }
 
 pub fn capture(app: &AppHandle) -> Result<(), String> {
-    let reply = native::call(json!({"op":"capture", "ignoreBundleId":"dev.cue.desktop"}))?;
-    let target = reply
-        .target
-        .ok_or("등록할 화면을 먼저 앞으로 가져와 주세요.")?;
-    show_main(app)?;
-    app.emit("captured", target).map_err(|e| e.to_string())
+    crate::capture::open(app)
 }
 
 pub fn dispatch(app: AppHandle, action: String) {

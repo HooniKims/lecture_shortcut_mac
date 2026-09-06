@@ -1,5 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 mod actions;
+mod capture;
 mod commands;
 mod displays;
 mod model;
@@ -9,7 +10,6 @@ mod store;
 mod update_install;
 mod update_state;
 mod updates;
-use std::sync::atomic::Ordering;
 use tauri::Emitter;
 use tauri::{
     Manager,
@@ -22,6 +22,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     tauri::Builder::default()
         .plugin(tauri_plugin_updater::Builder::new().build())
         .manage(updates::Updates::default())
+        .manage(capture::Capture::default())
         .plugin(tauri_plugin_single_instance::init(|app, _, _| {
             let _ = actions::show_main(app);
         }))
@@ -29,8 +30,17 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             tauri_plugin_global_shortcut::Builder::new()
                 .with_handler(|app, shortcut, event| {
                     if event.state() == ShortcutState::Pressed {
-                        if app.state::<store::Store>().recording.load(Ordering::SeqCst) {
-                            let _ = app.emit("recorded-shortcut", shortcut.to_string());
+                        let owner = app
+                            .state::<store::Store>()
+                            .recording
+                            .lock()
+                            .ok()
+                            .and_then(|owner| owner.clone());
+                        if let Some(owner) = owner.filter(|label| {
+                            app.get_webview_window(label)
+                                .is_some_and(|window| window.is_focused().unwrap_or(false))
+                        }) {
+                            let _ = app.emit_to(owner, "recorded-shortcut", shortcut.to_string());
                             return;
                         }
                         let action = app
@@ -90,10 +100,20 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         .on_window_event(|window, event| {
             if let tauri::WindowEvent::CloseRequested { api, .. } = event {
                 api.prevent_close();
-                window
-                    .state::<store::Store>()
-                    .recording
-                    .store(false, Ordering::SeqCst);
+                if window.label() == "capture" {
+                    let app = window.app_handle().clone();
+                    tauri::async_runtime::spawn_blocking(move || {
+                        if let Err(error) = capture::finish(&app, None, None) {
+                            let _ = app.emit_to("capture", "notice", error);
+                        }
+                    });
+                    return;
+                }
+                if let Ok(mut owner) = window.state::<store::Store>().recording.lock() {
+                    if owner.as_deref() == Some(window.label()) {
+                        *owner = None;
+                    }
+                }
                 let _ = window.hide();
             }
         })
@@ -105,6 +125,8 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             commands::toggle_panel,
             commands::refresh_displays,
             commands::record_shortcut,
+            capture::capture_draft,
+            capture::finish_capture,
             updates::update_status,
             updates::check_update,
             updates::install_update,

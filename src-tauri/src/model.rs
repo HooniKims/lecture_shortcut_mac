@@ -131,6 +131,8 @@ pub struct Permissions {
 
 #[derive(Clone, Default, Serialize, Deserialize)]
 pub struct NativeReply {
+    #[serde(rename = "captureDisplay")]
+    pub capture_display: Option<Display>,
     pub ok: bool,
     pub error: Option<String>,
     pub targets: Option<Vec<Target>>,

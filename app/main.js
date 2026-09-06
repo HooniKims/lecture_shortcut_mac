@@ -1,4 +1,5 @@
 const isPanel = new URLSearchParams(location.search).has('panel');
+const isCapture = new URLSearchParams(location.search).has('capture');
 const api = window.__TAURI__;
 const root = document.getElementById('root');
 let config = { entries: [], presets: [], settings: {} };
@@ -44,6 +45,7 @@ function tile(entry, compact = false) {
     <span class="target-symbol ${entry.target.kind}">${targetIcon(entry.target)}</span><strong>${escapeText(entry.label)}</strong><small>${escapeText(entry.target.app)} · ${kindName(entry.target.kind)}</small></button>`;
 }
 function render() {
+  if (isCapture) { document.body.classList.add('capture'); root.replaceChildren(); return; }
   document.body.classList.toggle('panel', isPanel);
   if (isPanel) { renderPanel(); return; }
   root.innerHTML = `<div class="shell"><aside class="sidebar"><div class="brand"><span class="cue-mark">c</span><span>cue<small>${config.settings.theme === 'paper' ? 'PAPER' : 'STUDIO'}</small></span></div>

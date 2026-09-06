@@ -32,6 +32,19 @@
         "decorations": false,
         "backgroundColor": "#191c21",
         "skipTaskbar": true
+      },
+      {
+        "label": "capture",
+        "title": "Cue · 빠른 등록",
+        "url": "index.html?capture",
+        "width": 520,
+        "height": 620,
+        "minWidth": 375,
+        "minHeight": 420,
+        "visible": false,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "backgroundColor": "#191c21"
       }
     ],
     "security": {

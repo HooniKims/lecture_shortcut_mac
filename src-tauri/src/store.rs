@@ -10,7 +10,7 @@ pub struct Store {
     pub displays: Mutex<Option<(String, Vec<Display>)>>,
     pub prepared: Mutex<Option<String>>,
     pub busy: AtomicBool,
-    pub recording: AtomicBool,
+    pub recording: Mutex<Option<String>>,
     pub startup_error: Mutex<Option<String>>,
     pub path: PathBuf,
 }
@@ -44,7 +44,7 @@ impl Store {
             displays: Mutex::new(None),
             prepared: Mutex::new(None),
             busy: AtomicBool::new(false),
-            recording: AtomicBool::new(false),
+            recording: Mutex::new(None),
             startup_error: Mutex::new(startup_error),
             path,
         })

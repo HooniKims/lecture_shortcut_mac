@@ -32,6 +32,7 @@ struct Response: Encodable {
     var displays: [Display]?
     var permissions: Permissions?
     var target: Target?
+    var captureDisplay: Display?
     var outcome: String?
     var warnings: [String]?
 }
@@ -40,11 +41,18 @@ struct NativeError: Error, CustomStringConvertible {
     init(_ message: String) { description = message }
 }
 let excludedBundle = "dev.cue.desktop"
-let chromiumBundles: Set<String> = ["com.google.Chrome", "com.google.Chrome.beta", "com.google.Chrome.canary", "com.microsoft.edgemac", "com.brave.Browser", "com.vivaldi.Vivaldi", "com.operasoftware.Opera", "company.thebrowser.Browser"]
+let chromiumBundles: Set<String> = ["com.google.Chrome", "com.google.Chrome.beta", "com.google.Chrome.canary", "com.microsoft.edgemac", "com.brave.Browser", "com.vivaldi.Vivaldi", "com.operasoftware.Opera", "company.thebrowser.Browser", "com.citrolabs.ego.lite"]
 func browserKind(_ bundle: String) -> String? {
     if chromiumBundles.contains(bundle) { return "chromium" }
     if bundle == "com.apple.Safari" || bundle == "com.apple.SafariTechnologyPreview" { return "safari" }
     return nil
+}
+func isBrowserApp(_ app: NSRunningApplication) -> Bool {
+    if let id = app.bundleIdentifier, browserKind(id) != nil { return true }
+    guard let url = app.bundleURL, let bundle = Bundle(url: url),
+          let types = bundle.object(forInfoDictionaryKey: "CFBundleURLTypes") as? [[String: Any]] else { return false }
+    let schemes = Set(types.flatMap { $0["CFBundleURLSchemes"] as? [String] ?? [] }.map { $0.lowercased() })
+    return schemes.contains("http") && schemes.contains("https")
 }
 func scriptLiteral(_ value: String) -> String {
     "\"" + value.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "\"", with: "\\\"").replacingOccurrences(of: "\r", with: "\\r").replacingOccurrences(of: "\n", with: "\\n") + "\""

@@ -23,21 +23,20 @@ func browserTabs(_ app: NSRunningApplication) throws -> [BrowserTab] {
             set ti to 0
             repeat with t in tabs of w
                 set ti to ti + 1
-                try
                     set tabTitle to \(safari ? "name" : "title") of t as text
                     set tabURL to URL of t as text
                     set tabIdentity to \(safari ? "ti as text" : "id of t as text")
                     set activeFlag to \(safari ? "(ti is index of current tab of w)" : "(ti is active tab index of w)")
                     set end of rows to {id of w as text, tabIdentity, tabTitle, tabURL, ti, activeFlag, wi is 1}
-                end try
             end repeat
         end repeat
         return rows
     end tell
     """
     let result = try runScript(source)
-    return (1...max(1, result.numberOfItems)).compactMap { i in
-        guard let row = result.atIndex(i), row.numberOfItems == 7 else { return nil }
+    if result.numberOfItems == 0 { return [] }
+    return try (1...result.numberOfItems).map { i in
+        guard let row = result.atIndex(i), row.numberOfItems == 7 else { throw NativeError("브라우저 탭 정보를 읽지 못했습니다. 브라우저를 확인한 뒤 다시 시도하세요.") }
         let wid = text(row.atIndex(1)); let tid = text(row.atIndex(2)); let url = text(row.atIndex(4))
         let target = Target(id: bundle + ":tab:" + wid + ":" + tid, kind: "tab", app: app.localizedName ?? bundle, bundleId: bundle, title: text(row.atIndex(3)), windowId: wid, tabId: safari ? nil : tid, url: url, pid: app.processIdentifier)
         return BrowserTab(target: target, index: Int(row.atIndex(5)?.int32Value ?? 1), active: row.atIndex(6)?.booleanValue ?? false, frontWindow: row.atIndex(7)?.booleanValue ?? false)
@@ -64,6 +63,11 @@ func snapshot(_ request: Request) -> Response {
                 targets += tabs.map(\.target)
                 continue
             } catch { warnings.append("\(app.localizedName ?? bundle): 탭 목록을 읽지 못했습니다. 자동화 권한을 확인하세요. \(error)") }
+            continue
+        }
+        if isBrowserApp(app) {
+            warnings.append("\(app.localizedName ?? bundle)은 개별 탭 조회를 지원하지 않습니다. 앱 전체 등록만 가능합니다.")
+            continue
         }
         if trusted {
             for window in windows(app.processIdentifier) {
