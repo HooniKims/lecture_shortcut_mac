@@ -5,7 +5,7 @@ function updateMessage(status) {
     case 'idle': return '새 버전이 있는지 확인해 보세요.';
     case 'checking': return '새 버전을 확인하고 있습니다…';
     case 'latest': return '최신 버전을 사용하고 있습니다.';
-    case 'unavailable': return '배포된 업데이트 정보를 찾지 못했습니다. 아직 첫 배포 전이거나 서버가 응답하지 않을 수 있습니다.';
+    case 'unavailable': return '배포된 업데이트 정보를 찾지 못했습니다. 첫 배포 전이거나 서버 연결이 원활하지 않습니다. 잠시 후 다시 확인해 주세요.';
     case 'available': return `${status.version} 버전을 설치할 수 있습니다.`;
     case 'downloading': return '업데이트 파일을 내려받고 검증하고 있습니다…';
     case 'installing': return '업데이트를 설치하고 있습니다. 잠시만 기다려 주세요.';

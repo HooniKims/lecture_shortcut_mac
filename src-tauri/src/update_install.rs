@@ -1,16 +1,27 @@
 use std::path::{Path, PathBuf};
 
-// Keep both renames on the app's volume, including installations on external disks.
-pub(crate) fn replace_bundle(current: &Path, staged: &Path, backup: &Path) -> Result<(), String> {
-    std::fs::rename(current, backup).map_err(|e| format!("기존 앱을 보관하지 못했습니다: {e}"))?;
-    if let Err(error) = std::fs::rename(staged, current) {
-        if let Err(restore) = std::fs::rename(backup, current) {
-            return Err(format!(
-                "앱 복구가 필요합니다. 백업 위치: {}. {error}; {restore}",
-                backup.display()
-            ));
-        }
-        return Err(format!("설치하지 못해 기존 앱으로 되돌렸습니다: {error}"));
+// RENAME_SWAP keeps the canonical app path present even if the process stops.
+pub(crate) fn replace_bundle(current: &Path, staged: &Path) -> Result<(), String> {
+    use std::{ffi::CString, os::unix::ffi::OsStrExt};
+    let current = CString::new(current.as_os_str().as_bytes()).map_err(|e| e.to_string())?;
+    let staged = CString::new(staged.as_os_str().as_bytes()).map_err(|e| e.to_string())?;
+    // SAFETY: [Category 8 — FFI boundary] Both C strings remain alive for this call.
+    // AT_FDCWD accepts these absolute paths. RENAME_SWAP atomically exchanges their
+    // directory entries; an error leaves both in place. No pointers are retained.
+    let result = unsafe {
+        libc::renameatx_np(
+            libc::AT_FDCWD,
+            current.as_ptr(),
+            libc::AT_FDCWD,
+            staged.as_ptr(),
+            libc::RENAME_SWAP,
+        )
+    };
+    if result != 0 {
+        return Err(format!(
+            "업데이트를 설치하지 못했습니다. 기존 앱은 그대로 유지됩니다: {}",
+            std::io::Error::last_os_error()
+        ));
     }
     Ok(())
 }
@@ -29,13 +40,9 @@ pub(crate) fn install(bytes: &[u8], current: &Path, version: &str) -> Result<(),
         .map_err(|e| format!("업데이트 파일을 풀지 못했습니다: {e}"))?;
     let next = stage.join("Cue.app");
     verify_bundle(&next, version)?;
-    let backup = workspace.path().join("previous.app");
-    let result = replace_bundle(current, &next, &backup);
-    if result.is_err() && backup.exists() {
-        // A failed rollback must never delete the only remaining copy of the app.
-        let _recovery_path = workspace.keep();
-    }
-    result
+    // After the atomic swap, stage contains the old app. Cleanup cannot remove
+    // the new bundle at the canonical path, even after interruption.
+    replace_bundle(current, &next)
 }
 
 fn verify_bundle(bundle: &Path, version: &str) -> Result<(), String> {
@@ -97,37 +104,29 @@ mod tests {
         Ok(())
     }
     #[test]
-    fn replacement_when_staged_is_missing_restores_old_app()
-    -> Result<(), Box<dyn std::error::Error>> {
+    fn replacement_when_staged_is_missing_keeps_old_app() -> Result<(), Box<dyn std::error::Error>>
+    {
         let root = tempfile::tempdir()?;
         let current = root.path().join("Cue.app");
         std::fs::create_dir(&current)?;
         std::fs::write(current.join("old"), "preserved")?;
-        assert!(
-            replace_bundle(
-                &current,
-                &root.path().join("missing"),
-                &root.path().join("backup")
-            )
-            .is_err()
-        );
+        assert!(replace_bundle(&current, &root.path().join("missing")).is_err());
         assert_eq!(std::fs::read_to_string(current.join("old"))?, "preserved");
         Ok(())
     }
     #[test]
-    fn replacement_when_staged_exists_keeps_old_bundle_until_commit()
+    fn replacement_when_staged_exists_atomically_swaps_bundles()
     -> Result<(), Box<dyn std::error::Error>> {
         let root = tempfile::tempdir()?;
         let current = root.path().join("Cue.app");
         let staged = root.path().join("next");
-        let backup = root.path().join("backup");
         std::fs::create_dir(&current)?;
         std::fs::create_dir(&staged)?;
         std::fs::write(current.join("old"), "old")?;
         std::fs::write(staged.join("new"), "new")?;
-        replace_bundle(&current, &staged, &backup)?;
+        replace_bundle(&current, &staged)?;
         assert!(current.join("new").exists());
-        assert!(backup.join("old").exists());
+        assert!(staged.join("old").exists());
         Ok(())
     }
 }

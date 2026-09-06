@@ -152,23 +152,42 @@ dialog::backdrop{background:var(--backdrop);backdrop-filter:blur(3px)}
 .permission-line button{font-size:11px}
 .permission-banner{border:1px solid var(--warning-border);background:var(--warning-bg);color:var(--warning-ink);border-radius:8px;padding:13px;margin-bottom:12px;font-size:12px}
 .permission-banner p{margin:7px 0 12px;font-size:11px;line-height:1.6}
-.panel{min-width:0}
-.panel-header{height:48px;display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:var(--sidebar);cursor:grab;user-select:none}
-.panel-header>div{display:flex;align-items:center;gap:12px;font-size:11px;color:var(--secondary)}
-.panel-brand{font-size:22px;letter-spacing:-1px;font-weight:750;color:var(--text)}
-.panel-intro{display:flex;justify-content:space-between;gap:8px;padding:18px 16px}
-.panel-intro small{font-size:9px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;max-width:150px}
-.panel-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:0 14px 14px}
-.panel-grid .pad{min-height:124px;padding-top:30px}
-.panel-grid .pad strong{font-size:11px}
-.panel-grid .target-symbol{height:28px}
-.panel-grid .target-symbol .icon{width:24px;height:24px}
-.panel-grid .pad.active{border-color:var(--accent)}
-.panel-footer{font-size:9px;text-align:center;padding:14px;color:var(--secondary)}
-.panel-send{padding:0 14px}
-.panel-send .button{font-size:11px}
-.panel-send kbd{font-size:9px}
+.panel{min-width:0;height:100vh;overflow:hidden}
+.panel #root{height:100%;display:flex;flex-direction:column}
+.panel-header{display:flex;align-items:center;justify-content:space-between;padding:22px 24px;border-bottom:1px solid var(--border-soft);cursor:grab;user-select:none;flex-shrink:0}
+.panel-header>div{display:flex;align-items:center;gap:14px;min-width:0}
+.panel-header .cue-mark{width:42px;height:42px;font-size:30px;box-shadow:none}
+.panel-heading strong{display:block;font-size:18px;letter-spacing:-.5px}
+.panel-heading small{display:block;font-size:11px;color:var(--secondary);margin-top:5px}
+.panel-header .icon-button{width:34px;height:34px}
+.panel-intro{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:20px 24px;padding:16px;background:var(--sidebar);border:1px solid var(--border-soft);border-radius:var(--radius);flex-shrink:0}
+.panel-monitor{display:flex;gap:12px;align-items:center;min-width:0;color:var(--secondary)}
+.panel-monitor>div{min-width:0}
+.panel-monitor small{display:block;font-size:10px;margin-bottom:6px}
+.panel-monitor strong{display:block;font-size:12px;font-weight:500;color:var(--text);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.panel-intro .mode{flex-shrink:0;font-size:10px}
+.panel-list-heading{display:flex;justify-content:space-between;margin:0 26px 12px;font-size:11px;color:var(--secondary);flex-shrink:0}
+.panel-grid{display:flex;flex-direction:column;gap:10px;padding:2px 24px 20px;overflow-y:auto;flex:1;min-height:0}
+.panel-grid .panel-row{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:14px;min-height:86px;padding:16px;text-align:left;flex-shrink:0;background:var(--elevated);box-shadow:inset 0 1px var(--border-soft);border-color:var(--border-soft)}
+.panel-row:hover{filter:none;background:var(--selected);border-color:var(--accent)}
+.panel-row-copy{min-width:0}
+.panel-grid .panel-row strong{font-size:15px;font-weight:600;line-height:1.45;word-break:keep-all;overflow-wrap:break-word}
+.panel-grid .panel-row small{display:block;font-size:11px;margin-top:5px;color:var(--secondary)}
+.panel-grid .target-symbol{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;background:var(--sidebar);margin:0}
+.panel-grid .target-symbol .icon{width:23px;height:23px}
+.panel-grid .panel-row>.key-combo{position:static;justify-self:end}
+.panel-grid .panel-row kbd{font-size:13px;min-width:22px;padding:4px 5px;border-radius:5px}
+.panel-grid .panel-row .key-separator{font-size:11px;margin:0 1px}
+.panel-grid .pad-status{display:block;position:static;font-size:10px;margin-top:7px}
+.panel-grid .pad-status:empty{display:none}
+.panel-grid .pad.active{border-color:var(--accent);background:var(--selected)}
+.panel-footer{display:flex;align-items:center;justify-content:center;gap:8px;font-size:10px;line-height:1.6;padding:16px 24px;color:var(--secondary);border-top:1px solid var(--border-soft);flex-shrink:0}
+.panel-footer .icon{width:16px;height:16px}
+.panel-send{padding:0 24px 16px;flex-shrink:0}
+.panel-send .button{font-size:12px;flex-wrap:wrap}
+.panel-send kbd{font-size:10px}
 .panel-send .key-separator{color:inherit}
+@media(max-width:460px){.panel-header{padding:18px}.panel-intro{margin:16px 18px}.panel-grid{padding-right:18px;padding-left:18px}.panel-grid .panel-row{grid-template-columns:36px minmax(0,1fr);gap:10px 12px}.panel-grid .panel-row>.key-combo{grid-column:2;justify-self:start}.panel-grid .target-symbol{align-self:start;width:36px;height:36px}.panel-list-heading{margin-right:20px;margin-left:20px}}
 #toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,12px);opacity:0;pointer-events:none;z-index:20;background:var(--toast-bg);color:var(--toast-ink);box-shadow:0 8px 30px var(--toast-shadow);padding:13px 18px;border-radius:9px;max-width:calc(100vw - 32px);width:max-content;font-size:12px;line-height:1.6;transition:opacity .15s,transform .15s}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 
@@ -197,7 +216,7 @@ dialog::backdrop{background:var(--backdrop);backdrop-filter:blur(3px)}
 .has-update::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);margin-left:auto}
 #update-dialog{padding:26px;width:min(520px,calc(100vw - 48px))}
 .update-version{color:var(--accent);font-size:22px;font-weight:650;margin:20px 0 12px}
-.update-message{line-height:1.7;color:var(--secondary);font-size:13px;overflow-wrap:anywhere}
+.update-message{line-height:1.7;color:var(--secondary);font-size:13px;word-break:keep-all;overflow-wrap:break-word}
 .update-notes{margin-top:20px;padding:16px;background:var(--input-bg);border:1px solid var(--border-soft);border-radius:8px;max-height:240px;overflow:auto}
 .update-notes p{margin-top:12px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;line-height:1.8}
 .update-actions{flex-wrap:wrap}
