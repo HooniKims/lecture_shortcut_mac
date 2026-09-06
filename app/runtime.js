@@ -73,5 +73,5 @@ async function boot() {
   });
   if (!isPanel) await subscribe('captured', event => addDialog(event.payload).catch(notice));
   await refresh();
-  if (!isPanel) void scheduleDisplayCheck();
+  if (!isPanel) { void scheduleDisplayCheck(); await startUpdates(); }
 }

@@ -1,0 +1,60 @@
+name: Prepare macOS release
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: '배포할 버전 태그 (예: v0.2.0). 앱 버전과 같아야 합니다.'
+        required: true
+        type: string
+permissions:
+  contents: write
+concurrency:
+  group: cue-macos-release
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - run: pnpm install --frozen-lockfile
+      - name: Validate version and signing key
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const v = JSON.parse(fs.readFileSync('src-tauri/tauri.conf.json')).version;
+          if (process.env.RELEASE_TAG !== `v${v}`) throw new Error('태그와 앱 버전이 다릅니다.');
+          if (!process.env.TAURI_SIGNING_PRIVATE_KEY) throw new Error('저장소의 업데이트 서명키 Secret이 필요합니다.');
+          JS
+      - run: npm test
+      - run: cargo test --manifest-path src-tauri/Cargo.toml
+      - name: Build signed update and installer
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: npm run build -- --target aarch64-apple-darwin
+      - name: Prepare manifest
+        env:
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: node scripts/release-manifest.mjs
+      - name: Upload draft release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          gh release create "$RELEASE_TAG" --draft --target "$GITHUB_SHA" --title "Cue $RELEASE_TAG" --generate-notes \
+            src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg \
+            src-tauri/target/aarch64-apple-darwin/release/bundle/macos/*.app.tar.gz \
+            src-tauri/target/aarch64-apple-darwin/release/bundle/macos/*.app.tar.gz.sig \
+            src-tauri/target/aarch64-apple-darwin/release/bundle/latest.json

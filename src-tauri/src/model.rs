@@ -65,6 +65,8 @@ impl Theme {
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Settings {
+    #[serde(default = "default_check_updates")]
+    pub check_updates: bool,
     #[serde(default)]
     pub theme: Theme,
     pub restore: bool,
@@ -75,10 +77,15 @@ pub struct Settings {
     pub send_shortcut: String,
 }
 
+fn default_check_updates() -> bool {
+    true
+}
+
 impl Default for Settings {
     fn default() -> Self {
         Self {
             theme: Theme::default(),
+            check_updates: true,
             restore: true,
             standby: false,
             display_id: None,

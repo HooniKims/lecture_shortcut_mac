@@ -6,6 +6,9 @@ mod model;
 mod native;
 mod shortcuts;
 mod store;
+mod update_install;
+mod update_state;
+mod updates;
 use std::sync::atomic::Ordering;
 use tauri::Emitter;
 use tauri::{
@@ -17,6 +20,8 @@ use tauri_plugin_global_shortcut::ShortcutState;
 
 fn run() -> Result<(), Box<dyn std::error::Error>> {
     tauri::Builder::default()
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .manage(updates::Updates::default())
         .plugin(tauri_plugin_single_instance::init(|app, _, _| {
             let _ = actions::show_main(app);
         }))
@@ -99,9 +104,20 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             commands::activate_entry,
             commands::toggle_panel,
             commands::refresh_displays,
-            commands::record_shortcut
+            commands::record_shortcut,
+            updates::update_status,
+            updates::check_update,
+            updates::install_update,
+            updates::restart_updated_app
         ])
-        .run(tauri::generate_context!())?;
+        .build(tauri::generate_context!())?
+        .run(|app, event| {
+            if let tauri::RunEvent::ExitRequested { api, .. } = event
+                && updates::installing(app)
+            {
+                api.prevent_exit();
+            }
+        });
     Ok(())
 }
 
@@ -111,3 +127,6 @@ fn main() {
         std::process::exit(1);
     }
 }
+
+#[cfg(test)]
+mod update_transport_tests;

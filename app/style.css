@@ -189,3 +189,17 @@ dialog::backdrop{background:var(--backdrop);backdrop-filter:blur(3px)}
 
 
 [hidden] { display: none !important; }
+
+.update-card-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.update-card-heading p{margin-top:8px;font-size:11px;color:var(--secondary)}
+.update-card .toggle-row{margin-top:16px}
+.update-card h3{margin-bottom:0}
+.has-update::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);margin-left:auto}
+#update-dialog{padding:26px;width:min(520px,calc(100vw - 48px))}
+.update-version{color:var(--accent);font-size:22px;font-weight:650;margin:20px 0 12px}
+.update-message{line-height:1.7;color:var(--secondary);font-size:13px;overflow-wrap:anywhere}
+.update-notes{margin-top:20px;padding:16px;background:var(--input-bg);border:1px solid var(--border-soft);border-radius:8px;max-height:240px;overflow:auto}
+.update-notes p{margin-top:12px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;line-height:1.8}
+.update-actions{flex-wrap:wrap}
+.update-actions .field-help{flex-basis:100%;margin:0 0 8px}
+#update-dialog progress{width:100%;height:8px;margin-top:20px;accent-color:var(--accent)}

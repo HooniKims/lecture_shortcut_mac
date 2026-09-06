@@ -28,11 +28,11 @@ async function createHarness() {
     boot: async () => {},
     on: (target, event, handler) => target.addEventListener(event, handler),
   });
-  for (const name of ['icons', 'dialogs', 'main', 'runtime']) {
+  for (const name of ['icons', 'dialogs', 'updates', 'main', 'runtime']) {
     vm.runInContext(await readFile(new URL(`../app/${name}.js`, import.meta.url), 'utf8'), context, { filename: `app/${name}.js` });
   }
   // Boot the real subscription path without starting display polling or state rendering.
-  vm.runInContext('refresh = async () => {}; scheduleDisplayCheck = async () => {};', context);
+  vm.runInContext('refresh = async () => {}; scheduleDisplayCheck = async () => {}; startUpdates = async () => {};', context);
   await vm.runInContext('boot()', context);
   return {
     run: code => vm.runInContext(code, context),

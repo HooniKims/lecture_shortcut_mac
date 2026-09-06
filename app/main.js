@@ -49,7 +49,7 @@ function render() {
     <button class="nav-item current" data-action="all">${icon('grid')}내 화면<span>${config.entries.length}</span></button>
     <div class="nav-heading">강의 프리셋<button class="icon-button" data-action="preset" aria-label="현재 목록을 프리셋으로 저장">${icon('plus')}</button></div>
     <div class="presets">${config.presets.map(p => `<div class="preset-row"><button class="nav-item" data-preset="${escapeText(p.id)}">${icon('folder')}<span>${escapeText(p.name)}</span></button><button class="icon-button quiet" data-delete-preset="${escapeText(p.id)}" aria-label="${escapeText(p.name)} 프리셋 삭제">${icon('close')}</button></div>`).join('') || '<p class="sidebar-note">강의마다 필요한 화면을<br>프리셋으로 저장하세요.</p>'}</div>
-    <div class="sidebar-bottom"><button class="nav-item" data-action="settings">${icon('settings')}환경 설정</button><span class="version">MAC PREVIEW · 0.1</span></div></aside>
+    <div class="sidebar-bottom"><button class="nav-item" data-action="settings">${icon('settings')}환경 설정</button><span class="version">MAC PREVIEW</span></div></aside>
     <main class="workspace"><header class="workspace-header"><div><p class="eyebrow">YOUR LECTURE, IN CONTROL</p><h1>내 화면</h1><p class="secondary">필요한 순간, 한 번의 단축키로.</p></div><button class="button primary" data-action="add">${icon('plus')}화면 등록</button></header>
     <button class="monitor-bar" data-action="settings">${icon('monitor')}<span><strong>${escapeText(monitorLabel())}</strong><small>${displays.length > 1 ? '청중에게 보여줄 모니터' : '현재 모니터에서 전환'}</small></span><span class="mode"><i></i>${modeLabel()}</span>${icon('chevron')}</button>
     <div class="list-toolbar"><label class="search">${icon('search')}<input id="search" type="search" placeholder="등록한 화면 검색" aria-label="등록한 화면 검색" value="${escapeText(search)}"></label><span>${config.entries.length}개 등록됨</span></div>
@@ -58,6 +58,7 @@ function render() {
     <footer class="workspace-footer"><span>${icon('keyboard')}같은 단축키를 다시 누르면 최소화</span><button class="button" data-action="panel">${icon('panel')}발표자 패널</button></footer></main>
     <aside class="inspector">${inspector()}</aside></div>`;
   filterPads();
+  renderUpdateStatus();
 }
 function filterPads() {
   const query = search.toLowerCase();
