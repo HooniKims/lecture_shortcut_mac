@@ -1,5 +1,5 @@
 use serde::Serialize;
-use std::sync::Mutex;
+use std::sync::{Mutex, atomic::AtomicBool};
 use tauri_plugin_updater::Update;
 
 #[derive(Clone, Default, Serialize)]
@@ -31,6 +31,7 @@ pub enum Status {
 }
 #[derive(Default)]
 pub struct Updates {
+    pub(crate) open_requested: AtomicBool,
     pub(crate) status: Mutex<Status>,
     pub(crate) pending: Mutex<Option<Update>>,
 }

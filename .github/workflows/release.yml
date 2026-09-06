@@ -53,7 +53,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
-          gh release create "$RELEASE_TAG" --draft --target "$GITHUB_SHA" --title "Cue $RELEASE_TAG" --generate-notes \
+          gh release create "$RELEASE_TAG" --draft --target "$GITHUB_SHA" --title "Cue $RELEASE_TAG" --notes-file "release-notes/${RELEASE_TAG#v}.md" \
             src-tauri/target/aarch64-apple-darwin/release/bundle/dmg/*.dmg \
             src-tauri/target/aarch64-apple-darwin/release/bundle/macos/*.app.tar.gz \
             src-tauri/target/aarch64-apple-darwin/release/bundle/macos/*.app.tar.gz.sig \

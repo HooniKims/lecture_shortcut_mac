@@ -7,9 +7,11 @@ const archive = 'Cue.app.tar.gz';
 if (!existsSync(`${root}/macos/${archive}`)) throw new Error('업데이트 압축파일이 없습니다.');
 const signature = readFileSync(`${root}/macos/${archive}.sig`, 'utf8').trim();
 if (!signature) throw new Error('업데이트 서명이 없습니다.');
+const notes = readFileSync(`release-notes/${config.version}.md`, 'utf8').trim();
+if (!notes) throw new Error('사용자에게 안내할 변경 내용을 작성해 주세요.');
 writeFileSync(`${root}/latest.json`, JSON.stringify({
   version: config.version,
-  notes: `Cue ${config.version} 업데이트입니다. 자세한 변경 내용은 GitHub 배포 페이지에서 확인해 주세요.`,
+  notes,
   pub_date: new Date().toISOString(),
   platforms: {
     'darwin-aarch64': {

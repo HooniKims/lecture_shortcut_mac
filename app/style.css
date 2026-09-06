@@ -250,3 +250,5 @@ body.capture { min-width: 0; overflow: hidden; }
 .target-url { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .capture form label { font-size: 14px; }
 .capture .field-help { font-size: 12px; word-break: keep-all; }
+
+.update-restart{margin-top:16px}

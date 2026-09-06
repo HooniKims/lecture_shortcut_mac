@@ -7,7 +7,7 @@
     "build": "node scripts/build.mjs",
     "check": "node --check app/main.js && node --check app/dialogs.js && node --check app/runtime.js && node --check app/updates.js && node --check app/capture.js && cargo check --manifest-path src-tauri/Cargo.toml",
     "tauri": "tauri",
-    "test": "node --test tests/frontend-*.mjs && sh tests/native-process/run.sh"
+    "test": "node --test tests/frontend-*.mjs tests/release-manifest.mjs && sh tests/native-process/run.sh"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.11.0"

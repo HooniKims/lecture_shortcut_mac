@@ -100,10 +100,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                     let _ = actions::panel(app);
                 }
                 "updates" => {
-                    if let Err(error) = actions::show_main(app).and_then(|()| {
-                        app.emit_to("main", "open-updates", ())
-                            .map_err(|e| e.to_string())
-                    }) {
+                    if let Err(error) = updates::request_update_dialog(app) {
                         let _ = app.emit_to("main", "notice", error);
                     }
                 }
@@ -143,6 +140,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             commands::record_shortcut,
             capture::capture_draft,
             capture::finish_capture,
+            updates::take_update_request,
             updates::update_status,
             updates::check_update,
             updates::install_update,

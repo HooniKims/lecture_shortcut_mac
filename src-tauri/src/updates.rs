@@ -2,7 +2,7 @@ use crate::update_state::Status;
 pub use crate::update_state::Updates;
 use crate::{native::BusyGuard, store::Store, update_install};
 use std::{
-    sync::atomic::AtomicBool,
+    sync::atomic::{AtomicBool, Ordering},
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 use tauri::{AppHandle, Emitter, Manager, WebviewWindow};
@@ -17,6 +17,9 @@ fn require_main(window: &WebviewWindow) -> Result<(), String> {
     }
 }
 fn publish(app: &AppHandle, status: Status) -> Result<(), String> {
+    if matches!(&status, Status::Available { .. }) {
+        let _ = crate::actions::show_main(app);
+    }
     *app.state::<Updates>()
         .status
         .lock()
@@ -30,6 +33,22 @@ pub fn installing(app: &AppHandle) -> bool {
         .lock()
         .map(|s| matches!(*s, Status::Installing { .. }))
         .unwrap_or(true)
+}
+pub fn request_update_dialog(app: &AppHandle) -> Result<(), String> {
+    app.state::<Updates>()
+        .open_requested
+        .store(true, Ordering::SeqCst);
+    crate::actions::show_main(app)?;
+    app.emit_to("main", "open-updates", ())
+        .map_err(|e| e.to_string())
+}
+#[tauri::command]
+pub fn take_update_request(app: AppHandle, window: WebviewWindow) -> Result<bool, String> {
+    require_main(&window)?;
+    Ok(app
+        .state::<Updates>()
+        .open_requested
+        .swap(false, Ordering::SeqCst))
 }
 #[tauri::command]
 pub fn update_status(app: AppHandle, window: WebviewWindow) -> Result<serde_json::Value, String> {
