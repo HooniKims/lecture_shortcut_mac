@@ -68,3 +68,7 @@ The presenter panel becomes a spacious shortcut list: 520×640 default, 380×400
 ## 12. Quick registration
 
 A dedicated 520×620 native window uses the current Studio/Paper tokens, 24px padding, 22px heading, 14px labels, 12px metadata, 16px component spacing and existing raised keycaps. At 375px the single-column form reflows and scrolls. It captures before showing, then displays the source title, browser/app identity and full selectable URL (wrapped safely). Name and recommended shortcut are editable; tab movement defaults to detach but occurs only on later activation. Enter saves, Escape cancels, and both return focus without moving the source. Inline failures retain edits. Repeated capture while the window is open preserves the draft. No polling or new animation. Source metadata uses a bordered elevated card; loading/error states use the same shell. List registration defaults to a tab filter when tabs exist, with explicit tabs/windows/apps filters and counts. No silent change of target kind.
+
+## 13. macOS menu bar
+
+Use a dedicated transparent, monochrome Cue monogram for the macOS status item. The 18-point canvas has a 2-point rounded stroke and a short lower-right cue stroke; omit the app tile background. Keep an editable SVG and a 36-pixel PNG for Retina rendering. Mark the native image as a template so macOS supplies contrast and selected-state colors independently of the app theme. Reuse the existing menu, tooltip and actions.

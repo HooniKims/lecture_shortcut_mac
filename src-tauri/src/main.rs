@@ -81,6 +81,13 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             let mut tray = TrayIconBuilder::new()
                 .menu(&menu)
                 .tooltip("Cue · 강의 화면 전환");
+            #[cfg(target_os = "macos")]
+            {
+                tray = tray
+                    .icon(tauri::include_image!("icons/tray-template.png"))
+                    .icon_as_template(true);
+            }
+            #[cfg(not(target_os = "macos"))]
             if let Some(icon) = app.default_window_icon() {
                 tray = tray.icon(icon.clone());
             }
