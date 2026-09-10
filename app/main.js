@@ -48,7 +48,7 @@ function render() {
   if (isCapture) { document.body.classList.add('capture'); root.replaceChildren(); return; }
   document.body.classList.toggle('panel', isPanel);
   if (isPanel) { renderPanel(); return; }
-  root.innerHTML = `<div class="shell"><aside class="sidebar"><div class="brand"><span class="cue-mark">c</span><span>cue<small>${config.settings.theme === 'paper' ? 'PAPER' : 'STUDIO'}</small></span></div>
+  root.innerHTML = `<div class="shell"><aside class="sidebar"><div class="brand"><span class="cue-mark">c</span><span>cue<small>${(themePreview || config.settings.theme) === 'paper' ? 'PAPER' : 'STUDIO'}</small></span></div>
     <button class="nav-item current" data-action="all">${icon('grid')}내 화면<span>${config.entries.length}</span></button>
     <div class="nav-heading">강의 프리셋<button class="icon-button" data-action="preset" aria-label="현재 목록을 프리셋으로 저장">${icon('plus')}</button></div>
     <div class="presets">${config.presets.map(p => `<div class="preset-row"><button class="nav-item" data-preset="${escapeText(p.id)}">${icon('folder')}<span>${escapeText(p.name)}</span></button><button class="icon-button quiet" data-delete-preset="${escapeText(p.id)}" aria-label="${escapeText(p.name)} 프리셋 삭제">${icon('close')}</button></div>`).join('') || '<p class="sidebar-note">강의마다 필요한 화면을<br>프리셋으로 저장하세요.</p>'}</div>

@@ -35,7 +35,7 @@ async function refresh(invalidate = false) {
       lastState = signature;
       config = state.config; prepared = state.prepared;
       if (state.displays) displays = state.displays;
-      document.documentElement.dataset.theme = config.settings.theme || 'studio';
+      document.documentElement.dataset.theme = themePreview || config.settings.theme || 'studio';
       if (!config.entries.some(e => e.id === selected)) selected = config.entries[0]?.id || null;
       if (state.startupError && !startupShown) { startupShown = true; notice(state.startupError); }
       render();

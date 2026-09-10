@@ -1,4 +1,11 @@
 const dialog = document.getElementById('dialog');
+let themePreview = null;
+function applyThemePreview() {
+  const theme = themePreview || config.settings.theme || 'studio';
+  document.documentElement.dataset.theme = theme;
+  const label = document.querySelector('.brand small');
+  if (label) label.textContent = theme === 'paper' ? 'PAPER' : 'STUDIO';
+}
 let requestedRecording = false, recordingWrite = null;
 function setShortcutRecording(recording) {
   if (!api || isPanel) return;
@@ -14,6 +21,7 @@ function closeDialog() {
   if (typeof isCapture !== 'undefined' && isCapture) { void cancelCapture(); return; }
   dialog.close();
   dialog.replaceChildren();
+  if (themePreview !== null) { themePreview = null; applyThemePreview(); }
 }
 function showDialog(title, content, submit) {
   dialog.innerHTML = `<form id="dialog-form"><header class="dialog-header"><h2 id="dialog-title">${title}</h2><button type="button" class="icon-button" data-action="close-dialog" aria-label="닫기">${icon('close')}</button></header>${content}<p id="dialog-error" class="form-error" role="alert"></p></form>`;
@@ -87,7 +95,7 @@ async function settingsDialog() {
   await pollDisplays();
   const s = config.settings;
   showDialog('환경 설정', `<p class="dialog-description">강의 환경에 맞춰 화면 전환 방식을 설정하세요.</p>
-    ${updateCard()}<section class="settings-section"><h3>${icon('grid')}화면 테마</h3><fieldset class="theme-choices"><legend class="sr-only">화면 테마 선택</legend><label class="theme-choice"><input type="radio" name="theme" value="studio" ${s.theme !== 'paper' ? 'checked' : ''}><span class="theme-swatch studio-swatch" aria-hidden="true"></span><span><strong>C · Studio</strong><small>어두운 제어판</small></span></label><label class="theme-choice"><input type="radio" name="theme" value="paper" ${s.theme === 'paper' ? 'checked' : ''}><span class="theme-swatch paper-swatch" aria-hidden="true"></span><span><strong>B · Paper</strong><small>밝고 차분한 화면</small></span></label></fieldset><p class="field-help">메인 화면과 발표자 패널에 함께 적용됩니다.</p></section>
+    ${updateCard()}<section class="settings-section"><h3>${icon('grid')}화면 테마</h3><fieldset class="theme-choices"><legend class="sr-only">화면 테마 선택</legend><label class="theme-choice"><input type="radio" name="theme" value="studio" ${s.theme !== 'paper' ? 'checked' : ''}><span class="theme-swatch studio-swatch" aria-hidden="true"></span><span><strong>C · Studio</strong><small>어두운 제어판</small></span></label><label class="theme-choice"><input type="radio" name="theme" value="paper" ${s.theme === 'paper' ? 'checked' : ''}><span class="theme-swatch paper-swatch" aria-hidden="true"></span><span><strong>B · Paper</strong><small>밝고 차분한 화면</small></span></label></fieldset><p class="field-help">선택하면 바로 미리 볼 수 있습니다. 저장하면 메인 화면과 발표자 패널에 함께 적용됩니다.</p></section>
     <section class="settings-section"><h3>${icon('monitor')}화면과 송출</h3><label>청중에게 보여줄 모니터<select name="displayId">${displays.map(d => `<option value="${escapeText(d.id)}" ${d.id === (s.displayId || displays.find(item => !item.primary)?.id || displays[0]?.id) ? 'selected' : ''}>${escapeText(d.name)}${d.primary ? ' · 기본 모니터' : ''}</option>`).join('')}</select></label>
     <label class="toggle-row"><span><strong>대기 모드</strong><small>${displays.length > 1 ? '원래 모니터에서 준비한 뒤 송출합니다.' : '모니터가 2대 이상일 때 사용할 수 있습니다.'}</small></span><input type="checkbox" name="standby" ${s.standby && displays.length > 1 ? 'checked' : ''} ${displays.length < 2 ? 'disabled' : ''}></label>
     <label class="toggle-row"><span><strong>재시작 후에도 등록 유지</strong><small>꺼도 직접 저장한 프리셋과 설정은 남습니다.</small></span><input type="checkbox" name="restore" ${s.restore ? 'checked' : ''}></label></section>
@@ -96,6 +104,11 @@ async function settingsDialog() {
     const next = structuredClone(config);
     next.settings = { checkUpdates: data.has('checkUpdates'), theme: String(data.get('theme') || 'studio'), restore: data.has('restore'), standby: data.has('standby') && displays.length > 1, displayId: String(data.get('displayId') || '') || null, panelShortcut: String(data.get('panelShortcut')), captureShortcut: String(data.get('captureShortcut')), sendShortcut: String(data.get('sendShortcut')) };
     await save(next); notice('설정을 저장했습니다.');
+  });
+  document.getElementById('dialog-form').addEventListener('change', event => {
+    if (event.target.name !== 'theme') return;
+    themePreview = event.target.value;
+    applyThemePreview();
   });
   document.getElementById('permission-button').addEventListener('click', async () => {
     try { const r = await invoke('inspect_native', { op: 'requestPermissions' }); notice(r.permissions?.accessibility ? '손쉬운 사용 권한이 허용되어 있습니다.' : '시스템 설정에서 Cue를 허용한 뒤 다시 시도해 주세요.'); } catch (error) { notice(error); }
