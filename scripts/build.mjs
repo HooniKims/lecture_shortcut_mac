@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readdirSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -12,4 +12,14 @@ for (const [command, args] of [['bash', ['native/build.sh']], ['node_modules/.bi
   const result = spawnSync(command, args, { env, stdio: 'inherit' });
   if (result.error) { console.error(result.error.message); process.exit(1); }
   if (result.status !== 0) process.exit(result.status ?? 1);
+}
+const targetIndex = process.argv.indexOf('--target');
+const target = targetIndex === -1 ? '' : process.argv[targetIndex + 1];
+const dmgDirectory = join('src-tauri', 'target', target, 'release', 'bundle', 'dmg');
+if (existsSync(dmgDirectory)) {
+  for (const file of readdirSync(dmgDirectory).filter(file => file.endsWith('.dmg'))) {
+    const result = spawnSync('bash', ['scripts/finalize-dmg.sh', join(dmgDirectory, file)], { stdio: 'inherit' });
+    if (result.error) { console.error(result.error.message); process.exit(1); }
+    if (result.status !== 0) process.exit(result.status ?? 1);
+  }
 }
