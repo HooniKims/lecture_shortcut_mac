@@ -49,6 +49,7 @@ async function createHarness() {
     icon() { return ''; },
     keys() { return ''; },
     notice() {},
+    onboardingDialogClosed() {}, renderOnboarding() {},
   };
 
   vm.createContext(context);

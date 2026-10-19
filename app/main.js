@@ -77,7 +77,6 @@ function tile(entry, compact = false) {
 function render() {
   const focused = root.contains(document.activeElement) ? document.activeElement : null;
   const focusId = focused?.id, focusName = focused?.name, focusSelect = focused?.dataset?.select;
-  const focusOnboard = focused?.dataset?.onboard;
   const focusEntry = focused?.closest('#edit-form')?.dataset.entryId;
   const selectionStart = focused?.selectionStart, selectionEnd = focused?.selectionEnd;
   for (const id of editDrafts.keys()) if (!config.entries.some(e => e.id === id)) editDrafts.delete(id);
@@ -90,7 +89,7 @@ function render() {
     <div class="presets">${config.presets.map(p => `<div class="preset-row"><button class="nav-item" data-preset="${escapeText(p.id)}">${icon('folder')}<span>${escapeText(p.name)}</span></button><button class="icon-button quiet" data-delete-preset="${escapeText(p.id)}" aria-label="${escapeText(p.name)} 프리셋 삭제">${icon('close')}</button></div>`).join('') || '<p class="sidebar-note">강의마다 필요한 화면을<br>프리셋으로 저장하세요.</p>'}</div>
     <div class="sidebar-bottom"><button class="nav-item" data-action="help">${icon('keyboard')}사용 방법</button><button class="nav-item" data-action="settings">${icon('settings')}환경 설정</button><span class="version">MAC PREVIEW</span></div></aside>
     <main class="workspace"><header class="workspace-header"><div><p class="eyebrow">강의 화면을 한곳에</p><h1>내 화면</h1><p class="secondary">필요한 순간, 한 번의 단축키로.</p></div><button class="button primary" data-action="add">${icon('plus')}화면 등록</button></header>
-    <div id="onboarding-slot"></div><button class="monitor-bar" data-action="settings">${icon('monitor')}<span><strong>${escapeText(monitorLabel())}</strong><small>${displays.length > 1 ? '청중에게 보여줄 모니터' : '현재 모니터에서 전환'}</small></span><span class="mode"><i></i>${modeLabel()}</span>${icon('chevron')}</button>
+    <button class="monitor-bar" data-action="settings">${icon('monitor')}<span><strong>${escapeText(monitorLabel())}</strong><small>${displays.length > 1 ? '청중에게 보여줄 모니터' : '현재 모니터에서 전환'}</small></span><span class="mode"><i></i>${modeLabel()}</span>${icon('chevron')}</button>
     <div class="list-toolbar"><label class="search">${icon('search')}<input id="search" type="search" placeholder="등록한 화면 검색" aria-label="등록한 화면 검색" value="${escapeText(search)}"></label><span data-result-count aria-live="polite">${config.entries.length}개 등록됨</span></div>
     <div class="pad-grid">${config.entries.map(e => tile(e)).join('')}</div><div class="empty search-empty" hidden><h2>검색 결과가 없습니다</h2><p>이름이나 앱 이름으로 다시 검색해 보세요.</p><button class="button" data-action="clear-search">검색 지우기</button></div>
     ${!config.entries.length ? `<div class="empty"><span class="empty-symbol">${icon('keyboard')}</span><h2>다음 화면을 준비해 보세요</h2><p>열려 있는 앱, 창, 브라우저 탭을 골라<br>나만의 단축키에 연결하세요.</p><button class="button primary" data-action="add">${icon('plus')}첫 화면 등록</button><small>직접 띄운 화면은 ${keycap(config.settings.captureShortcut)} 로 등록</small></div>` : '<p class="hint">패드를 선택해 편집하고, 단축키를 눌러 화면을 전환하세요.</p>'}
@@ -99,7 +98,7 @@ function render() {
   filterPads();
   renderOnboarding();
   updateEditStatus(document.getElementById('edit-form'));
-  const restored = focusOnboard ? [...root.querySelectorAll('[data-onboard]')].find(el => el.dataset.onboard === focusOnboard) || document.getElementById('tour-title') : focusId === 'tour-title' ? document.getElementById('tour-title') : focusSelect ? [...root.querySelectorAll('[data-select]')].find(el => el.dataset.select === focusSelect) : focusId === 'search' ? document.getElementById('search') : focusEntry === selected && focusName ? document.getElementById('edit-form')?.elements.namedItem(focusName) : null;
+  const restored = focusSelect ? [...root.querySelectorAll('[data-select]')].find(el => el.dataset.select === focusSelect) : focusId === 'search' ? document.getElementById('search') : focusEntry === selected && focusName ? document.getElementById('edit-form')?.elements.namedItem(focusName) : null;
   if (restored) { restored.focus({preventScroll: true}); if (selectionStart != null && restored.setSelectionRange) restored.setSelectionRange(selectionStart, selectionEnd); }
   renderUpdateStatus();
 }

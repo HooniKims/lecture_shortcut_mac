@@ -3,8 +3,8 @@ const pageEvents = new AbortController();
 const eventCleanups = [];
 let refreshPending = null, refreshAgain = false, lastState = '', runtimeDisposed = false;
 let displayTimer = null;
-function on(target, event, handler) {
-  target.addEventListener(event, handler, { signal: pageEvents.signal });
+function on(target, event, handler, options = {}) {
+  target.addEventListener(event, handler, { ...options, signal: pageEvents.signal });
 }
 async function subscribe(event, handler) {
   const stop = await api.event.listen(event, handler);

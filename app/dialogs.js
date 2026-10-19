@@ -23,6 +23,7 @@ function closeDialog() {
   dialog.close();
   dialog.replaceChildren();
   if (themePreview !== null) { themePreview = null; applyThemePreview(); }
+  onboardingDialogClosed();
 }
 function showDialog(title, content, submit) {
   setShortcutRecording(false);
@@ -42,6 +43,7 @@ function showDialog(title, content, submit) {
     catch (error) { form.querySelector('.form-error').textContent = String(error); }
     finally { submitting = false; form.removeAttribute('aria-busy'); if (button) button.disabled = false; }
   });
+  renderOnboarding();
 }
 const dialogFooter = label => `<footer class="dialog-footer"><button type="button" class="button" data-action="close-dialog">취소</button><button class="button primary" type="submit">${label}</button></footer>`;
 function nextShortcut() {
@@ -64,6 +66,8 @@ async function addDialog(captured = null) {
     selected = id; await save(next); notice('화면을 등록했습니다. 단축키를 눌러 불러오세요.');
   });
   const form = document.getElementById('dialog-form');
+  form.dataset.tour = 'registration';
+  onboardingRegistrationOpened();
   const picker = form.querySelector('#target-picker');
   let suggested = captured ? defaultName(captured) : '';
   function choose(target) {
@@ -72,6 +76,7 @@ async function addDialog(captured = null) {
     suggested = defaultName(target);
     document.getElementById('add-tab-mode').disabled = target.kind !== 'tab';
     renderTargets();
+    onboardingPicked();
   }
   function renderTargets() {
     const focused = document.activeElement;
@@ -83,6 +88,7 @@ async function addDialog(captured = null) {
     picker.innerHTML = filtered.map(t => `<button type="button" aria-pressed="${t.id === selectedTarget?.id}" data-target-id="${escapeText(t.id)}" class="picker-item ${t.id === selectedTarget?.id ? 'chosen' : ''}"><span class="target-symbol ${t.kind}">${targetIcon(t)}</span><span><strong>${escapeText(defaultName(t))}</strong><small>${escapeText(t.app)} · ${kindName(t.kind)}</small>${t.url ? `<small class="target-url" title="${escapeText(t.url)}">${escapeText(t.url)}</small>` : ''}</span>${t.id === selectedTarget?.id ? icon('check') : ''}</button>`).join('') || '<p class="picker-empty">이 종류에서 찾은 화면이 없습니다.<br>검색어와 권한을 확인한 뒤 새로고침해 주세요.</p>';
     const restore = focusKind ? [...form.querySelectorAll('[data-kind]')].find(el => el.dataset.kind === focusKind) : focusTarget ? [...picker.querySelectorAll('[data-target-id]')].find(el => el.dataset.targetId === focusTarget) : null;
     restore?.focus({preventScroll: true});
+    renderOnboarding();
   }
   document.getElementById('target-filters').addEventListener('click', event => { const button = event.target.closest('[data-kind]'); if (button) { targetKind = button.dataset.kind; if (targetKind !== 'all' && selectedTarget?.kind !== targetKind) { selectedTarget = null; form.querySelector('#add-tab-mode').disabled = true; } renderTargets(); } });
   picker.addEventListener('click', event => { const row = event.target.closest('[data-target-id]'); const target = targets.find(t => t.id === row?.dataset.targetId); if (target) choose(target); });
@@ -102,7 +108,7 @@ async function addDialog(captured = null) {
       document.getElementById('browser-note').textContent = reply.warnings?.length ? reply.warnings.join(' ') : '탭은 페이지 제목과 주소로 확인하세요.';
     } catch (error) {
       if (document.getElementById('dialog-form') === form) { picker.textContent = '목록을 불러오지 못했습니다. 새로고침해 다시 시도해 주세요.'; form.querySelector('.form-error').textContent = String(error); }
-    } finally { form.querySelector('#rescan').disabled = false; picker.removeAttribute('aria-busy'); }
+    } finally { form.querySelector('#rescan').disabled = false; picker.removeAttribute('aria-busy'); renderOnboarding(); }
   }
   document.getElementById('rescan').addEventListener('click', () => scan().catch(error => { document.getElementById('dialog-error').textContent = String(error); }));
   form.querySelector('[type="submit"]').disabled = !selectedTarget;
