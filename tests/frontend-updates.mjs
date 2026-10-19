@@ -29,6 +29,13 @@ function harness(phase = 'idle', options = {}) {
     click: action => listeners.get('click')({ target: { closest: () => ({ dataset: { update: action } }) } }),
   };
 }
+test('Automatic update prompts do not interrupt an active first-run tutorial', () => {
+  const h = harness('idle');
+  h.run("let onboarding = {step:'welcome'}; receiveUpdateStatus({phase:'available',version:'0.4.0'})");
+  assert.equal(h.dialog.open, false);
+  h.run("onboarding = null; receiveUpdateStatus({phase:'available',version:'0.4.0'})");
+  assert.equal(h.dialog.open, true);
+});
 test('Given a check in flight, when update details are opened, then no second check is sent', async () => {
   const h = harness('checking'); await h.click('open'); assert.equal(h.dialog.open, true); assert.equal(h.calls.length, 0);
 });

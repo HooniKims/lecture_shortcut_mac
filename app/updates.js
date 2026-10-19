@@ -63,7 +63,7 @@ async function openUpdateDialog() {
 }
 function receiveUpdateStatus(status) {
   updateState.status = status; renderUpdateStatus();
-  if (status.phase === 'available' && notifiedVersion !== status.version) {
+  if (status.phase === 'available' && notifiedVersion !== status.version && !(typeof onboarding !== 'undefined' && onboarding)) {
     notifiedVersion = status.version;
     void openUpdateDialog().catch(notice);
   }

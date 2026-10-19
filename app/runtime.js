@@ -38,6 +38,7 @@ async function refresh(invalidate = false) {
       document.documentElement.dataset.theme = themePreview || config.settings.theme || 'studio';
       if (!config.entries.some(e => e.id === selected)) selected = config.entries[0]?.id || null;
       if (state.startupError && !startupShown) { startupShown = true; notice(state.startupError); }
+      syncOnboarding();
       render();
     } while (refreshAgain);
   })().finally(() => { refreshPending = null; });
@@ -76,7 +77,9 @@ async function boot() {
   await subscribe('action', event => {
     active = event.payload.outcome === 'minimized' ? null : event.payload.id;
     updatePads();
+    onboardingAction(event.payload);
   });
+  if (!isPanel) await subscribe('presenter-visibility', event => onboardingPanel(event.payload));
   await refresh();
-  if (!isPanel) { void scheduleDisplayCheck(); await startUpdates(); }
+  if (!isPanel) { startFirstRun(); void scheduleDisplayCheck(); await startUpdates(); }
 }

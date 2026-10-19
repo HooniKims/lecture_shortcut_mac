@@ -192,5 +192,5 @@ function helpDialog() {
     <li><strong>단축키로 불러오기</strong><p>등록한 단축키를 누르면 화면이 앞으로 나옵니다. 같은 단축키를 다시 누르면 최소화됩니다. 패드를 선택한 뒤 화면 띄우기를 눌러도 됩니다.</p></li>
     <li><strong>발표자 패널 활용하기</strong><p>${keycap(config.settings.panelShortcut)}로 작은 호출 목록을 켜거나 숨깁니다. 패널에서는 항목을 누르면 바로 화면이 열립니다.</p></li>
     <li><strong>청중 모니터 설정하기</strong><p>환경 설정에서 Zoom으로 공유 중인 모니터와 같은 모니터를 고르세요. 모니터가 두 대면 대기 모드에서 준비한 뒤 ${keycap(config.settings.sendShortcut)}로 송출할 수 있습니다.</p></li>
-  </ol><footer class="dialog-footer"><button type="button" class="button primary" data-action="close-dialog">확인</button></footer>`, async () => false);
+  </ol><footer class="dialog-footer"><button type="button" class="button" data-action="close-dialog">닫기</button><button type="button" class="button primary" data-onboard="welcome">직접 따라 해보기</button></footer>`, async () => false);
 }

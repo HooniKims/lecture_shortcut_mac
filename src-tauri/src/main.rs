@@ -136,6 +136,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             commands::inspect_native,
             commands::activate_entry,
             commands::toggle_panel,
+            commands::show_panel,
             commands::refresh_displays,
             commands::record_shortcut,
             capture::capture_draft,

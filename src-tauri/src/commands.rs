@@ -85,6 +85,11 @@ pub fn toggle_panel(app: AppHandle) -> Result<(), String> {
 }
 
 #[tauri::command]
+pub fn show_panel(app: AppHandle) -> Result<(), String> {
+    actions::set_panel_visible(&app, true)
+}
+
+#[tauri::command]
 pub async fn refresh_displays(app: AppHandle) -> Result<NativeReply, String> {
     static REFRESHING: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
     let guard = native::BusyGuard::acquire(&REFRESHING).ok_or("모니터 정보를 확인 중입니다.")?;
