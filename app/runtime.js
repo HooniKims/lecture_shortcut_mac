@@ -34,7 +34,7 @@ async function refresh(invalidate = false) {
       if (signature === lastState) return;
       lastState = signature;
       config = state.config; prepared = state.prepared;
-      if (state.displays) displays = state.displays;
+      if (state.displays) { displays = state.displays; syncDisplaySettings(); }
       document.documentElement.dataset.theme = themePreview || config.settings.theme || 'studio';
       if (!config.entries.some(e => e.id === selected)) selected = config.entries[0]?.id || null;
       if (state.startupError && !startupShown) { startupShown = true; notice(state.startupError); }
@@ -47,8 +47,7 @@ function updateDisplays(next) {
   if (JSON.stringify(next) === JSON.stringify(displays)) return;
   displays = next;
   render();
-  const standby = dialog.querySelector('input[name="standby"]');
-  if (standby) { standby.disabled = displays.length < 2; if (standby.disabled) standby.checked = false; }
+  syncDisplaySettings();
 }
 async function pollDisplays() {
   if (displayPolling || runtimeDisposed) return;

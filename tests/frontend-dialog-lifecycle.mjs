@@ -8,6 +8,7 @@ const flush = async () => new Promise(setImmediate);
 async function createHarness() {
   const listeners = new Map();
   let form = null;
+  let submitHandler = null;
   const dialog = {
     open: false,
     children: { length: 0 },
@@ -19,7 +20,7 @@ async function createHarness() {
     showModal() { this.open = true; },
     set innerHTML(value) {
       this.children.length = value ? 1 : 0;
-      form = { addEventListener() {}, querySelector() { return { textContent: '' }; } };
+      form = { addEventListener(name, handler) { if (name === 'submit') submitHandler = handler; }, querySelector() { return { textContent: '' }; }, setAttribute() {}, removeAttribute() {} };
     },
   };
   const root = { innerHTML: '' };
@@ -36,6 +37,7 @@ async function createHarness() {
   let context;
   const targetName = target => target === dialog ? 'dialog' : target === document ? 'document' : 'window';
   context = {
+    FormData: class {},
     URL,
     URLSearchParams,
     boot: async () => {},
@@ -66,6 +68,8 @@ async function createHarness() {
       return prevented;
     },
     dialog,
+    submit() { return submitHandler({preventDefault() {}, target: form, submitter: null}); },
+    openWith(submit) { context.submitCallback = submit; vm.runInContext("showDialog('Title', '', submitCallback)", context); },
     open() { vm.runInContext("showDialog('Title', '', async () => {})", context); },
   };
 }
@@ -94,4 +98,16 @@ test('Given Escape cancels an open dialog, when native close notification is del
   assert.equal(harness.cancel(), true);
   assert.equal(harness.dialog.open, false);
   assert.equal(harness.dialog.children.length, 0);
+});
+
+
+test('Repeated implicit submissions save a dialog only once while the first save is pending', async () => {
+  const harness = await createHarness();
+  let calls = 0, finish;
+  harness.openWith(() => { calls++; return new Promise(resolve => { finish = resolve; }); });
+  const first = harness.submit();
+  void harness.submit();
+  assert.equal(calls, 1);
+  finish();
+  await first;
 });

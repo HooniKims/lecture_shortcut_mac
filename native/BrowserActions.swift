@@ -27,32 +27,17 @@ func browserAction(_ request: Request, _ target: Target) throws -> Response {
     let app = try runningApp(target.bundleId) ?? openApp(target)
     var tabs = try browserTabs(app)
     var reopened = false
-    var selection: BrowserTab?
-    let sameProcess = target.pid == app.processIdentifier
-    if target.kind == "tab" {
-        if sameProcess, !safari, let id = target.tabId { selection = tabs.first { $0.target.tabId == id } }
-        if selection == nil, let url = target.url {
-            let sameWindow = sameProcess ? tabs.filter { $0.target.url == url && $0.target.windowId == target.windowId } : []
-            let all = sameWindow.isEmpty ? tabs.filter { $0.target.url == url } : sameWindow
-            if all.count > 1 { throw NativeError("같은 주소의 탭이 여러 개입니다. 원하는 탭을 다시 등록하세요.") }
-            selection = all.first
-        }
-        if selection == nil {
-            guard let url = target.url, let parsed = URL(string: url), ["http", "https", "file", "about", "chrome", "edge", "brave", "data"].contains(parsed.scheme?.lowercased() ?? "") else { throw NativeError("닫힌 탭을 다시 열 수 있는 주소가 없습니다.") }
-            let create = safari ? "make new document with properties {URL:\(scriptLiteral(url))}" : "set w to make new window\nset URL of active tab of w to \(scriptLiteral(url))"
-            _ = try runScript("tell application id \(scriptLiteral(target.bundleId))\n\(create)\nend tell")
-            tabs = try browserTabs(app)
-            selection = tabs.first { $0.target.url == url }
-            reopened = true
-        }
-    } else {
-        if sameProcess { selection = tabs.first { $0.target.windowId == target.windowId && $0.active } }
-        else {
-            let matches = tabs.filter { $0.active && $0.target.title == target.title }
-            if matches.count == 1 { selection = matches.first }
-            if matches.count > 1 { throw NativeError("같은 이름의 브라우저 창이 여러 개입니다. 원하는 창을 다시 등록하세요.") }
-        }
-        if selection == nil { throw NativeError("등록한 브라우저 창이 닫혔습니다. 목록에서 다시 등록하세요.") }
+    var selection = try findBrowserTarget(target, tabs: tabs, pid: app.processIdentifier)
+    if selection == nil, target.kind == "tab" {
+        guard let url = target.url, let parsed = URL(string: url), ["http", "https", "file", "about", "chrome", "edge", "brave", "data"].contains(parsed.scheme?.lowercased() ?? "") else { throw NativeError("닫힌 탭을 다시 열 수 있는 주소가 없습니다.") }
+        let create = safari ? "make new document with properties {URL:\(scriptLiteral(url))}\nset w to front window" : "set w to make new window\nset URL of active tab of w to \(scriptLiteral(url))"
+        let createdWindow = text(try runScript("tell application id \(scriptLiteral(target.bundleId))\n\(create)\nreturn id of w as text\nend tell"))
+        tabs = try browserTabs(app)
+        // Same-URL tabs are separate targets. Only select the window just created.
+        selection = tabs.first { $0.target.windowId == createdWindow && $0.active }
+        reopened = true
+    } else if selection == nil {
+        throw NativeError("등록한 브라우저 창이 닫혔습니다. 목록에서 다시 등록하세요.")
     }
     guard var chosen = selection else { throw NativeError("브라우저 탭이 아직 준비되지 않았습니다. 잠시 뒤 다시 시도하세요.") }
     var wid = try numericID(chosen.target.windowId)
@@ -60,7 +45,7 @@ func browserAction(_ request: Request, _ target: Target) throws -> Response {
     let minimized = try runScript(prefix + "return \(safari ? "miniaturized" : "minimized") of window id \(wid)\nend tell").booleanValue
     if ["toggle", "prepare"].contains(request.op) && app.isActive && chosen.frontWindow && chosen.active && !minimized && !reopened {
         _ = try runScript(prefix + "set \(safari ? "miniaturized" : "minimized") of window id \(wid) to true\nend tell")
-        return Response(target: target, outcome: "minimized")
+        return Response(target: resolvedBrowserTarget(target, chosen: chosen), outcome: "minimized")
     }
     let activateTab = safari ? "set current tab of w to tab \(chosen.index) of w" : "set active tab index of w to \(chosen.index)"
     _ = try runScript(prefix + "set w to window id \(wid)\nset \(safari ? "miniaturized" : "minimized") of w to false\n\(activateTab)\nend tell")
@@ -101,8 +86,6 @@ func browserAction(_ request: Request, _ target: Target) throws -> Response {
         _ = try runScript(prefix + "set bounds of window id \(wid) to {\(Int(next.minX)), \(Int(next.minY)), \(Int(next.maxX)), \(Int(next.maxY))}\nend tell")
     }
     _ = try runScript(prefix + "set index of window id \(wid) to 1\nactivate\nend tell")
-    var updated = target
-    updated.windowId = wid; updated.pid = app.processIdentifier
-    if target.kind == "tab" { updated.title = chosen.target.title; updated.tabId = chosen.target.tabId; updated.url = chosen.target.url }
+    let updated = resolvedBrowserTarget(target, chosen: chosen)
     return Response(target: updated, outcome: request.op == "prepare" ? "prepared" : (reopened ? "reopened" : "shown"))
 }
