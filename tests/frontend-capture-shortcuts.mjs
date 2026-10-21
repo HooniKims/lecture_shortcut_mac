@@ -33,3 +33,41 @@ test('an older draft response cannot replace the newer registration being edited
   assert.equal(vm.runInContext('captureSession.id', context), 5);
   assert.equal(rendered, false);
 });
+
+
+test('A late capture response cannot reopen a draft after it was dismissed', async () => {
+  let resolveDraft, rendered = false;
+  const context = vm.createContext({
+    invoke: () => new Promise(resolve => { resolveDraft = resolve; }),
+    config: {entries: []}, showDialog() { rendered = true; },
+    icon: () => '', targetIcon: () => '', kindName: () => '', escapeText: () => '',
+    defaultName: () => '', nextShortcut: () => '', shortcutField: () => '',
+    document: {querySelector: () => null}, setShortcutRecording() {},
+    dialog: {close() {}, replaceChildren() {}}
+  });
+  vm.runInContext(await readFile(new URL('../app/capture.js', import.meta.url), 'utf8'), context);
+  vm.runInContext('captureSession = {id: 5, target: {id: "closed"}}', context);
+  const pending = vm.runInContext('loadCapture()', context);
+  vm.runInContext('dismissCapture()', context);
+  resolveDraft({id: 5, target: {id: 'closed'}});
+  await pending;
+  assert.equal(rendered, false);
+});
+
+test('Quick capture warns about the same live Chromium tab after a manual window move', async () => {
+  let html='';
+  const original={id:'browser:tab:1:20',kind:'tab',bundleId:'com.google.Chrome',pid:100,windowId:'1',tabId:'20',title:'Lesson',app:'Chrome'};
+  const moved={...original,id:'browser:tab:2:20',windowId:'2'};
+  const context=vm.createContext({URLSearchParams,location:{search:'?capture'},
+    window:{__TAURI__:{core:{invoke:async()=>({id:1,target:moved})}}},
+    document:{getElementById:()=>({}),querySelector:()=>null},
+    on(){},boot:async()=>{},showDialog:(_,content)=>{html=content;},icon:()=>'',keys:()=>'',
+    escapeText:s=>s,nextShortcut:()=> 'Super+Shift+2',shortcutField:()=>'',
+    sample:{entries:[{target:original}],settings:{}}
+  });
+  vm.runInContext(await readFile(new URL('../app/main.js',import.meta.url),'utf8'),context);
+  vm.runInContext(await readFile(new URL('../app/capture.js',import.meta.url),'utf8'),context);
+  vm.runInContext('config=sample',context);await vm.runInContext('loadCapture()',context);
+  assert.match(html,/이미 등록된 화면/);
+  assert.match(html,/type="submit" disabled/);
+});

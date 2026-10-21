@@ -1,0 +1,128 @@
+{
+  "environment": "Local app sources with isolated Tauri IPC fake; Chromium via ego-browser",
+  "date": "2026-10-19",
+  "flows": [
+    {
+      "name": "empty search",
+      "pass": true
+    },
+    {
+      "name": "clear search",
+      "pass": true
+    },
+    {
+      "name": "registration starts with all filters and disabled save",
+      "pass": true
+    },
+    {
+      "name": "selection keeps keyboard focus",
+      "pass": true
+    },
+    {
+      "name": "registration saves and selects new entry",
+      "pass": true
+    },
+    {
+      "name": "theme preview",
+      "pass": true
+    },
+    {
+      "name": "cancel theme restores saved theme",
+      "pass": true
+    },
+    {
+      "name": "save theme",
+      "pass": true
+    },
+    {
+      "name": "failed save preserves draft",
+      "pass": true
+    },
+    {
+      "name": "discard draft restores saved value",
+      "pass": true
+    },
+    {
+      "name": "no runtime errors",
+      "pass": true,
+      "errors": []
+    }
+  ],
+  "layouts": [
+    {
+      "screen": "main",
+      "width": 1160,
+      "height": 780,
+      "overflow": false,
+      "saveVisible": true,
+      "padWidths": [
+        213,
+        213
+      ]
+    },
+    {
+      "screen": "main",
+      "width": 820,
+      "height": 620,
+      "overflow": false,
+      "saveVisible": true,
+      "padWidths": [
+        183,
+        183
+      ]
+    },
+    {
+      "screen": "main",
+      "width": 640,
+      "height": 620,
+      "overflow": false,
+      "saveVisible": true,
+      "padWidths": [
+        215,
+        215
+      ]
+    },
+    {
+      "screen": "registration",
+      "width": 820,
+      "overflow": false,
+      "footerAccessible": true
+    },
+    {
+      "screen": "settings",
+      "width": 820,
+      "overflow": false,
+      "footerAccessible": true
+    },
+    {
+      "screen": "panel",
+      "width": 380,
+      "overflow": false,
+      "listScrollable": true,
+      "errors": []
+    },
+    {
+      "screen": "capture",
+      "width": 375,
+      "overflow": false,
+      "footerAccessible": true,
+      "errors": []
+    }
+  ],
+  "final": {
+    "pendingSaveReversion": {
+      "saved": "저장 요청한 이름",
+      "draft": "강의 소개",
+      "saveEnabled": true
+    },
+    "help": {
+      "steps": 4,
+      "overflow": false
+    },
+    "settings": {
+      "selectHeight": 40,
+      "overflow": false,
+      "errors": []
+    }
+  }
+}

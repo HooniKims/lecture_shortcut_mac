@@ -27,9 +27,9 @@ pub fn save_config(app: AppHandle, config: Config) -> Result<(), String> {
 
 pub fn commit_config(app: &AppHandle, current: &mut Config, config: Config) -> Result<(), String> {
     let store = app.state::<Store>();
-    shortcuts::replace(app, current, &config)?;
+    let binding_changes = shortcuts::replace(app, current, &config)?;
     if let Err(e) = store.persist(&config) {
-        if let Err(rollback) = shortcuts::replace(app, &config, current) {
+        if let Err(rollback) = binding_changes.rollback(app) {
             return Err(format!(
                 "{e}. 이전 단축키 복구 실패: {rollback}. Cue를 재시작해 주세요."
             ));

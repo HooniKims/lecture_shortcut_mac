@@ -18,6 +18,23 @@ pub struct Target {
     pub pid: Option<i32>,
 }
 
+impl Target {
+    pub fn same_instance(&self, other: &Self) -> bool {
+        self.id == other.id
+            || (self.kind == TargetKind::Tab
+                && other.kind == TargetKind::Tab
+                && self.bundle_id == other.bundle_id
+                && !matches!(
+                    self.bundle_id.as_str(),
+                    "com.apple.Safari" | "com.apple.SafariTechnologyPreview"
+                )
+                && self.pid.is_some()
+                && self.pid == other.pid
+                && self.tab_id.is_some()
+                && self.tab_id == other.tab_id)
+    }
+}
+
 #[derive(Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum TargetKind {

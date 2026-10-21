@@ -21,12 +21,20 @@ pub fn panel(app: &AppHandle) -> Result<(), String> {
     let win = app
         .get_webview_window("presenter")
         .ok_or("발표자 패널을 찾을 수 없습니다.")?;
-    if win.is_visible().map_err(|e| e.to_string())? {
-        win.hide()
-    } else {
+    set_panel_visible(app, !win.is_visible().map_err(|e| e.to_string())?)
+}
+
+pub fn set_panel_visible(app: &AppHandle, visible: bool) -> Result<(), String> {
+    let win = app
+        .get_webview_window("presenter")
+        .ok_or("발표자 패널을 찾을 수 없습니다.")?;
+    if visible {
         win.show()
+    } else {
+        win.hide()
     }
-    .map_err(|e| e.to_string())
+    .map_err(|e| e.to_string())?;
+    app.emit("presenter-visibility", visible).map_err(|e| e.to_string())
 }
 
 pub fn show_main(app: &AppHandle) -> Result<(), String> {

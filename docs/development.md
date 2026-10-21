@@ -62,6 +62,16 @@ npm run build
 
 브라우저 UI 테스트는 ego-browser에서 격리된 IPC 테스트 대역으로 실행합니다. OS 전환과 실제 업데이트 설치는 별도 검증입니다. 임시 서명으로 업데이트했을 때 macOS 실행 경고·손쉬운 사용·자동화 권한이 유지되는지는 별도로 확인해야 합니다.
 
+`npm test`는 프런트엔드 회귀 테스트, 네이티브 프로세스 수명 검사, Swift 대상 식별과 브라우저 동작 검사를 실행합니다. Swift 브라우저 동작 검사는 실제 동작 코드를 사용하고 Apple Events·창 조회 경계만 대체하므로 사용자의 열린 창을 변경하지 않습니다.
+
+빌드한 앱의 압축 해제·서명 검증·원자적 교체는 다음과 같이 임시 폴더에서 검사할 수 있습니다. macOS 기본 `tar`로 직접 압축할 때는 `COPYFILE_DISABLE=1`을 지정하세요. AppleDouble(`._*`) 메타데이터가 일반 파일로 풀리면 앱 서명 검증에서 추가 리소스로 거부됩니다.
+
+```sh
+COPYFILE_DISABLE=1 tar -czf /tmp/Cue-qa.app.tar.gz -C src-tauri/target/release/bundle/macos Cue.app
+CUE_TEST_ARCHIVE=/tmp/Cue-qa.app.tar.gz cargo test --manifest-path src-tauri/Cargo.toml built_archive_when_installed_replaces_bundle_and_cleans_workspace -- --ignored
+```
+
 - [네이티브 지원 범위](../native/README.md)
 - [합의 요구사항](requirements.md)
 - [기존 검증 기록](evidence/implementation-qa.md)
+- [2026-10-19 디버깅·UI/UX 개선 기록](evidence/2026-10-19-debug-ux-audit.md)

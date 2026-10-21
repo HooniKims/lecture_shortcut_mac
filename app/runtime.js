@@ -3,8 +3,8 @@ const pageEvents = new AbortController();
 const eventCleanups = [];
 let refreshPending = null, refreshAgain = false, lastState = '', runtimeDisposed = false;
 let displayTimer = null;
-function on(target, event, handler) {
-  target.addEventListener(event, handler, { signal: pageEvents.signal });
+function on(target, event, handler, options = {}) {
+  target.addEventListener(event, handler, { ...options, signal: pageEvents.signal });
 }
 async function subscribe(event, handler) {
   const stop = await api.event.listen(event, handler);
@@ -34,10 +34,11 @@ async function refresh(invalidate = false) {
       if (signature === lastState) return;
       lastState = signature;
       config = state.config; prepared = state.prepared;
-      if (state.displays) displays = state.displays;
+      if (state.displays) { displays = state.displays; syncDisplaySettings(); }
       document.documentElement.dataset.theme = themePreview || config.settings.theme || 'studio';
       if (!config.entries.some(e => e.id === selected)) selected = config.entries[0]?.id || null;
       if (state.startupError && !startupShown) { startupShown = true; notice(state.startupError); }
+      syncOnboarding();
       render();
     } while (refreshAgain);
   })().finally(() => { refreshPending = null; });
@@ -47,8 +48,7 @@ function updateDisplays(next) {
   if (JSON.stringify(next) === JSON.stringify(displays)) return;
   displays = next;
   render();
-  const standby = dialog.querySelector('input[name="standby"]');
-  if (standby) { standby.disabled = displays.length < 2; if (standby.disabled) standby.checked = false; }
+  syncDisplaySettings();
 }
 async function pollDisplays() {
   if (displayPolling || runtimeDisposed) return;
@@ -77,7 +77,9 @@ async function boot() {
   await subscribe('action', event => {
     active = event.payload.outcome === 'minimized' ? null : event.payload.id;
     updatePads();
+    onboardingAction(event.payload);
   });
+  if (!isPanel) await subscribe('presenter-visibility', event => onboardingPanel(event.payload));
   await refresh();
-  if (!isPanel) { void scheduleDisplayCheck(); await startUpdates(); }
+  if (!isPanel) { startFirstRun(); void scheduleDisplayCheck(); await startUpdates(); }
 }

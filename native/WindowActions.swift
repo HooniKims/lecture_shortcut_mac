@@ -43,11 +43,12 @@ func genericAction(_ request: Request, _ target: Target) throws -> Response {
         if request.displayId != nil && allDisplays().count > 1 { throw NativeError("앱은 열었지만 이동할 창이 없습니다.") }
         return Response(target: target, outcome: reopened ? "reopened" : "shown")
     }
+    let updated = resolvedWindowTarget(target, windowId: windowKey(window), title: windowTitle(window), pid: app.processIdentifier)
     let currentlyFront = NSWorkspace.shared.frontmostApplication?.processIdentifier == app.processIdentifier
     let sameWindow = focused.map { CFEqual($0, window) } ?? false
     if ["toggle", "prepare"].contains(request.op) && currentlyFront && sameWindow && !isMinimized(window) {
         guard AXUIElementSetAttributeValue(window, kAXMinimizedAttribute as CFString, kCFBooleanTrue) == .success else { throw NativeError("이 창은 최소화할 수 없습니다.") }
-        return Response(target: target, outcome: "minimized")
+        return Response(target: updated, outcome: "minimized")
     }
     _ = AXUIElementSetAttributeValue(window, kAXMinimizedAttribute as CFString, kCFBooleanFalse)
     try moveAX(window, request.op == "prepare" ? nil : selectedDisplay(request.displayId))
@@ -55,6 +56,5 @@ func genericAction(_ request: Request, _ target: Target) throws -> Response {
     let raised = AXUIElementPerformAction(window, kAXRaiseAction as CFString)
     _ = AXUIElementSetAttributeValue(axApp, kAXFocusedWindowAttribute as CFString, window)
     guard raised == .success else { throw NativeError("선택한 창을 앞으로 가져오지 못했습니다.") }
-    var updated = target; updated.pid = app.processIdentifier; updated.title = windowTitle(window); updated.windowId = windowKey(window)
     return Response(target: updated, outcome: request.op == "prepare" ? "prepared" : (reopened ? "reopened" : "shown"))
 }

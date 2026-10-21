@@ -110,7 +110,7 @@ fn registration_config(
     if current
         .entries
         .iter()
-        .any(|entry| entry.target.id == target.id)
+        .any(|entry| entry.target.same_instance(target))
     {
         return Err(
             "이미 등록된 화면입니다. 메인 목록에서 이름과 단축키를 변경할 수 있습니다.".into(),
@@ -246,6 +246,19 @@ mod tests {
             registration_config(&Config::default(), &target("2"), input("Super+Shift+1"))?;
         assert!(registration_config(&current, &target("2"), input("Super+Shift+2")).is_err());
         assert!(registration_config(&current, &target("3"), input("Super+Shift+2")).is_ok());
+        Ok(())
+    }
+    #[test]
+    fn moving_a_live_chromium_tab_does_not_allow_duplicate_registration() -> Result<(), String> {
+        let mut original = target("2");
+        original.pid = Some(100);
+        let current = registration_config(&Config::default(), &original, input("Super+Shift+1"))?;
+        let mut moved = original.clone();
+        moved.id = "browser:tab:new-window:2".into();
+        moved.window_id = Some("new-window".into());
+        assert!(registration_config(&current, &moved, input("Super+Shift+2")).is_err());
+        moved.pid = Some(200);
+        assert!(registration_config(&current, &moved, input("Super+Shift+2")).is_ok());
         Ok(())
     }
     #[test]
